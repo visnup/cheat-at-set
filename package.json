@@ -6,9 +6,12 @@
   "dependencies": {
     "next": "^7.0.2",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react-dom": "^16.7.0",
+    "styled-components": "^4.1.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-plugin-styled-components": "^1.10.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next",
