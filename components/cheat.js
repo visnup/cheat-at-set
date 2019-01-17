@@ -31,14 +31,17 @@ function cheat(src, canvas) {
 
 class Cheat extends Component {
   async componentDidMount() {
-    this.video.srcObject = await navigator.mediaDevices.getUserMedia({
+    const src = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment' }
     })
+    this.video.srcObject = src
 
     if (this.canvas) {
-      const { width, height } = this.canvas.getBoundingClientRect()
+      const track = src.getVideoTracks()[0],
+            { aspectRatio } = track.getSettings()
+      const { width } = this.canvas.getBoundingClientRect()
       this.canvas.width = width
-      this.canvas.height = height
+      this.canvas.height = width / aspectRatio
     }
 
     this.loop()
@@ -49,7 +52,7 @@ class Cheat extends Component {
     if (!canvas) return
 
     cheat(video, canvas)
-    setTimeout(this.loop, 2000)
+    setTimeout(this.loop, 100)
   }
 
   render() {
@@ -65,14 +68,15 @@ class Cheat extends Component {
 export default styled(Cheat)`
   video {
     position: absolute;
-    top: 50px;
-    left: 50px;
+    top: 50%;
+    left: 50%;
     width: 1px;
     height: 1px;
+    opacity: 0;
   }
 
   canvas {
     width: 100vw;
-    height: 100vh;
+    height: auto;
   }
 `
