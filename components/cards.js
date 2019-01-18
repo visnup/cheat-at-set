@@ -122,16 +122,14 @@ class Card {
   }
 }
 
-export default function cards(image) {
-  const thresholdedImage = thresholded(image)
-
-  return chain(contourFinder(thresholdedImage))
+export default function cards(image, threshold = 212) {
+  return chain(contourFinder(thresholded(image, threshold)))
     .filter(c => c.length > 300) // large enough ones to be cards
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
     .map(polygonHull)
     .sortBy(polygonArea)
-    .take(12)
     .map(contour => new Card(image, contour))
-    .filter(card => card.color && card.shade && card.number && card.shape)
+    .filter(card => card.shape && card.number && card.color && card.shade)
+    .take(12)
     .value()
 }

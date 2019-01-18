@@ -5,33 +5,6 @@ import { schemeCategory10 } from 'd3-scale-chromatic'
 import cards from './cards'
 import sets from './sets'
 
-function cheat(src, canvas) {
-  if (!canvas.width) return
-
-  const ctx = canvas.getContext('2d')
-  ctx.drawImage(src, 0, 0, canvas.width, canvas.height)
-
-  const colors = schemeCategory10.map(c => {
-    c = color(c)
-    c.opacity = 0.9
-    return c
-  })
-
-  const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  let i = 0
-  for (const set of sets(cards(image))) {
-    ctx.strokeStyle = colors[i++ % colors.length]
-    for (const card of set) {
-      ctx.lineWidth = card.width = card.width || 18
-      card.width /= 2
-      ctx.beginPath()
-      for (const [x, y] of card.contour) ctx.lineTo(x, y)
-      ctx.closePath()
-      ctx.stroke()
-    }
-  }
-}
-
 class Cheat extends Component {
   async componentDidMount() {
     const src = await navigator.mediaDevices.getUserMedia({
@@ -51,10 +24,34 @@ class Cheat extends Component {
 
   loop = () => {
     const { video, canvas } = this
-    if (video && canvas) {
-      cheat(video, canvas)
-      requestAnimationFrame(this.loop)
+    if (!video || !canvas) return
+
+    if (canvas.width) {
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+      const colors = schemeCategory10.map(c => {
+        c = color(c)
+        c.opacity = 0.9
+        return c
+      })
+
+      let i = 0
+      for (const set of sets(cards(image, 200))) {
+        ctx.strokeStyle = colors[i++ % colors.length]
+        for (const card of set) {
+          ctx.lineWidth = card.width = card.width || 18
+          card.width /= 2
+          ctx.beginPath()
+          for (const [x, y] of card.contour) ctx.lineTo(x, y)
+          ctx.closePath()
+          ctx.stroke()
+        }
+      }
     }
+
+    requestAnimationFrame(this.loop)
   }
 
   render() {
