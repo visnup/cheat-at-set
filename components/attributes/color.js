@@ -1,6 +1,6 @@
 import { scaleThreshold } from 'd3-scale'
 import { hsl, rgb } from 'd3-color'
-import { luminosity, threshold } from './luminosity'
+import { luminosity, threshold } from '../luminosity'
 
 const hue = scaleThreshold()
   .domain([70, 180, 340])
@@ -18,5 +18,6 @@ export default function color(image) {
   // return counts
   if (counts.purple / space > 0.2) return 'purple'
   else if (counts.green / space > 0.5) return 'green'
-  else return 'red'
+  else if (counts.red / space > 0.1) return 'red'
+  else return null
 }

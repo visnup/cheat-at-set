@@ -3,10 +3,10 @@ import chain from 'lodash'
 import contourFinder from 'contours'
 import perspectiveTransform from 'perspective-transform'
 import { luminosity, threshold } from './luminosity'
-import color from './color'
-import number from './number'
-import shade from './shade'
-import shape from './shape'
+import color from './attributes/color'
+import number from './attributes/number'
+import shade from './attributes/shade'
+import shape from './attributes/shape'
 
 function thresholded(image) {
   const result = new ImageData(image.width, image.height),
@@ -132,5 +132,6 @@ export default function cards(image) {
     .sortBy(polygonArea)
     .take(12)
     .map(contour => new Card(image, contour))
+    .filter(card => card.color && card.shade && card.number && card.shape)
     .value()
 }

@@ -7,6 +7,7 @@ import sets from './sets'
 
 function cheat(src, canvas) {
   if (!canvas.width) return
+
   const ctx = canvas.getContext('2d')
   ctx.drawImage(src, 0, 0, canvas.width, canvas.height)
 

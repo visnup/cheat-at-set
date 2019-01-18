@@ -1,6 +1,6 @@
 import { extent } from 'd3-array'
 import { scaleThreshold } from 'd3-scale'
-import { luminosity } from './luminosity'
+import { luminosity } from '../luminosity'
 
 const threshold = scaleThreshold()
   .domain([180, 240])
