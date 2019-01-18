@@ -7,6 +7,7 @@ import cards from './cards'
 import sets from './sets'
 
 function cheat(src, canvas) {
+  if (!canvas.width) return
   const ctx = canvas.getContext('2d')
   ctx.drawImage(src, 0, 0, canvas.width, canvas.height)
 
@@ -38,11 +39,13 @@ class Cheat extends Component {
     })
     this.video.srcObject = src
 
-    if (this.canvas) {
-      const { width, height } = DOM.size(this.video)
-      this.canvas.width = width
-      this.canvas.height = height
-    }
+    this.video.addEventListener('loadeddata', () => {
+      if (this.canvas) {
+        const { width, height } = DOM.size(this.video)
+        this.canvas.width = width
+        this.canvas.height = height
+      }
+    })
 
     this.loop()
   }
