@@ -11,15 +11,12 @@ export default function color(image) {
 
   const { data } = image
   for (let i = 0; i < data.length; i += 4)
-    if (threshold(luminosity(data[i], data[i+1], data[i+2])) === 0)
-      counts[hue(hsl(rgb(data[i], data[i+1], data[i+2])).h)]++
+    if (threshold(luminosity(data[i], data[i + 1], data[i + 2])) === 0)
+      counts[hue(hsl(rgb(data[i], data[i + 1], data[i + 2])).h)]++
   const space = counts.red + counts.green + counts.purple
 
   // return counts
-  if (counts.purple / space > 0.2)
-    return 'purple'
-  else if (counts.green / space > 0.5)
-    return 'green'
-  else
-    return 'red'
+  if (counts.purple / space > 0.2) return 'purple'
+  else if (counts.green / space > 0.5) return 'green'
+  else return 'red'
 }

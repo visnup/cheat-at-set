@@ -21,11 +21,10 @@ function cheat(src, canvas) {
   for (const set of sets(cards(image))) {
     ctx.strokeStyle = colors[i++ % colors.length]
     for (const card of set) {
-      ctx.lineWidth = (card.width = card.width || 18)
+      ctx.lineWidth = card.width = card.width || 18
       card.width /= 2
       ctx.beginPath()
-      for (const [x, y] of card.contour)
-        ctx.lineTo(x, y)
+      for (const [x, y] of card.contour) ctx.lineTo(x, y)
       ctx.closePath()
       ctx.stroke()
     }
@@ -39,8 +38,8 @@ class Cheat extends Component {
     })
     this.video.srcObject = src
 
-    this.video.addEventListener('loadeddata', () => {
-      const track = this.video.srcObject.getVideoTracks()[0]
+    this.video.addEventListener('loadeddata', ({ target }) => {
+      const track = target.srcObject.getVideoTracks()[0]
       const { width, height } = track.getSettings()
       this.canvas.width = width
       this.canvas.height = height
@@ -60,15 +59,16 @@ class Cheat extends Component {
   render() {
     return (
       <div {...this.props}>
-        <video ref={ref => this.video = ref} autoPlay muted playsInline />
-        <canvas ref={ref => this.canvas = ref} />
+        <video ref={ref => (this.video = ref)} autoPlay muted playsInline />
+        <canvas ref={ref => (this.canvas = ref)} />
       </div>
     )
   }
 }
 
 export default styled(Cheat)`
-  video, img {
+  video,
+  img {
     position: absolute;
     top: 50%;
     left: 50%;

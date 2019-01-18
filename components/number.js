@@ -6,21 +6,19 @@ const threshold = scaleThreshold()
 
 function percentageWidth(contours, width) {
   let min = width,
-      max = 0
-  
+    max = 0
+
   for (const shape of contours) {
     for (const [x, y] of shape) {
       if (x < min) min = x
       if (x > max) max = x
     }
   }
-  
+
   // mirror a min or max to the other side for incomplete shape finding
-  if (width - min > max)
-    max = width - min
-  if (width - max < min)
-    min = width - max
-  
+  if (width - min > max) max = width - min
+  if (width - max < min) min = width - max
+
   return (max - min) / width
 }
 
