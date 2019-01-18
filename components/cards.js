@@ -8,12 +8,12 @@ import number from './attributes/number'
 import shade from './attributes/shade'
 import shape from './attributes/shape'
 
-function thresholded(image) {
+export function thresholded(image, value = 212) {
   const result = new ImageData(image.width, image.height),
     r = result.data,
     d = image.data
   for (let i = 0; i < d.length; i += 4) {
-    r[i] = r[i + 1] = r[i + 2] = threshold(luminosity(d[i], d[i + 1], d[i + 2]))
+    r[i] = r[i + 1] = r[i + 2] = threshold(luminosity(d[i], d[i + 1], d[i + 2]), value)
     r[i + 3] = d[i + 3]
   }
 

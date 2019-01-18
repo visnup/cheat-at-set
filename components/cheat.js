@@ -2,10 +2,21 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { color } from 'd3-color'
 import { schemeCategory10 } from 'd3-scale-chromatic'
-import cards from './cards'
+import cards, { thresholded } from './cards'
 import sets from './sets'
 
+const colors = schemeCategory10.map(c => {
+  c = color(c)
+  c.opacity = 0.9
+  return c
+})
+
 class Cheat extends Component {
+  state = {
+    adjustThreshold: false,
+    threshold: 212,
+  }
+
   async componentDidMount() {
     const src = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'environment' }
@@ -29,17 +40,16 @@ class Cheat extends Component {
     if (canvas.width) {
       const ctx = canvas.getContext('2d')
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      // console.time('cards')
       const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-      const colors = schemeCategory10.map(c => {
-        c = color(c)
-        c.opacity = 0.9
-        return c
-      })
+      if (this.state.adjustThreshold)
+        ctx.putImageData(thresholded(image, this.state.threshold), 0, 0)
 
       let i = 0
-      for (const set of sets(cards(image, 200))) {
+      for (const set of sets(cards(image, this.state.threshold))) {
         ctx.strokeStyle = colors[i++ % colors.length]
+        console.log(set)
         for (const card of set) {
           ctx.lineWidth = card.width = card.width || 18
           card.width /= 2
@@ -49,14 +59,31 @@ class Cheat extends Component {
           ctx.stroke()
         }
       }
+      // console.timeEnd('cards')
     }
 
     requestAnimationFrame(this.loop)
   }
 
+  toggleThreshold = event => {
+    this.setState({
+      adjustThreshold: (event.type === 'mousedown' || event.type === 'touchstart') && event.screenY,
+    })
+  }
+
+  moveThreshold = event => {
+    if (this.state.adjustThreshold)
+      this.setState({
+        threshold: this.state.threshold + event.screenY - this.state.adjustThreshold,
+        adjustThreshold: event.screenY,
+      })
+  }
+
   render() {
     return (
-      <div {...this.props}>
+      <div {...this.props}
+          onMouseDown={this.toggleThreshold} onMouseUp={this.toggleThreshold} onMouseMove={this.moveThreshold}
+          onTouchStart={this.toggleThreshold} onTouchEnd={this.toggleThreshold} onTouchMove={this.moveThreshold}>
         <video ref={ref => (this.video = ref)} autoPlay muted playsInline />
         <canvas ref={ref => (this.canvas = ref)} />
       </div>
