@@ -94,6 +94,8 @@ class Cheat extends Component {
 }
 
 export default styled(Cheat)`
+  user-select: none;
+
   video,
   img {
     position: absolute;
