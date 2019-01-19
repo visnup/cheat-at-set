@@ -67,16 +67,18 @@ class Cheat extends Component {
 
   toggleThreshold = event => {
     this.setState({
-      adjustThreshold: (event.type === 'mousedown' || event.type === 'touchstart') && event.screenY,
+      adjustThreshold: (event.type === 'mousedown' || event.type === 'touchstart') && (event.screenY || event.touches[0].screenY),
     })
   }
 
   moveThreshold = event => {
-    if (this.state.adjustThreshold)
+    if (this.state.adjustThreshold) {
+      const screenY = event.screenY || event.touches[0].screenY
       this.setState({
-        threshold: this.state.threshold + event.screenY - this.state.adjustThreshold,
-        adjustThreshold: event.screenY,
+        threshold: this.state.threshold + screenY - this.state.adjustThreshold,
+        adjustThreshold: screenY,
       })
+    }
   }
 
   render() {
@@ -98,6 +100,8 @@ export default styled(Cheat)`
     top: 50%;
     left: 50%;
     opacity: 0;
+    width: 1px;
+    height: 1px;
   }
 
   canvas {
