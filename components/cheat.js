@@ -28,39 +28,36 @@ class Cheat extends Component {
       const { width, height } = track.getSettings()
       this.canvas.width = width
       this.canvas.height = height
-    })
 
-    this.loop()
+      this.loop()
+    })
   }
 
   loop = () => {
     const { video, canvas } = this
     if (!video || !canvas) return
 
-    if (canvas.width) {
-      const ctx = canvas.getContext('2d')
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-      // console.time('cards')
-      const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+    // console.time('cards')
+    const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-      if (this.state.adjustThreshold)
-        ctx.putImageData(thresholded(image, this.state.threshold), 0, 0)
+    if (this.state.adjustThreshold)
+      ctx.putImageData(thresholded(image, this.state.threshold), 0, 0)
 
-      let i = 0
-      for (const set of sets(cards(image, this.state.threshold))) {
-        ctx.strokeStyle = colors[i++ % colors.length]
-        console.log(set)
-        for (const card of set) {
-          ctx.lineWidth = card.width = card.width || 18
-          card.width /= 2
-          ctx.beginPath()
-          for (const [x, y] of card.contour) ctx.lineTo(x, y)
-          ctx.closePath()
-          ctx.stroke()
-        }
+    let i = 0
+    for (const set of sets(cards(image, this.state.threshold))) {
+      ctx.strokeStyle = colors[i++ % colors.length]
+      for (const card of set) {
+        ctx.lineWidth = card.width = card.width || 18
+        card.width /= 2
+        ctx.beginPath()
+        for (const [x, y] of card.contour) ctx.lineTo(x, y)
+        ctx.closePath()
+        ctx.stroke()
       }
-      // console.timeEnd('cards')
     }
+    // console.timeEnd('cards')
 
     requestAnimationFrame(this.loop)
   }
