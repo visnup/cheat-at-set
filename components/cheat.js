@@ -14,7 +14,7 @@ const colors = schemeCategory10.map(c => {
 class Cheat extends Component {
   state = {
     adjustThreshold: false,
-    threshold: 212,
+    threshold: 212
   }
 
   async componentDidMount() {
@@ -64,7 +64,9 @@ class Cheat extends Component {
 
   toggleThreshold = event => {
     this.setState({
-      adjustThreshold: (event.type === 'mousedown' || event.type === 'touchstart') && (event.screenY || event.touches[0].screenY),
+      adjustThreshold:
+        (event.type === 'mousedown' || event.type === 'touchstart') &&
+        (event.screenY || event.touches[0].screenY)
     })
   }
 
@@ -73,16 +75,22 @@ class Cheat extends Component {
       const screenY = event.screenY || event.touches[0].screenY
       this.setState({
         threshold: this.state.threshold + screenY - this.state.adjustThreshold,
-        adjustThreshold: screenY,
+        adjustThreshold: screenY
       })
     }
   }
 
   render() {
     return (
-      <div {...this.props}
-          onMouseDown={this.toggleThreshold} onMouseUp={this.toggleThreshold} onMouseMove={this.moveThreshold}
-          onTouchStart={this.toggleThreshold} onTouchEnd={this.toggleThreshold} onTouchMove={this.moveThreshold}>
+      <div
+        {...this.props}
+        onMouseDown={this.toggleThreshold}
+        onMouseUp={this.toggleThreshold}
+        onMouseMove={this.moveThreshold}
+        onTouchStart={this.toggleThreshold}
+        onTouchEnd={this.toggleThreshold}
+        onTouchMove={this.moveThreshold}
+      >
         <video ref={ref => (this.video = ref)} autoPlay muted playsInline />
         <canvas ref={ref => (this.canvas = ref)} />
       </div>

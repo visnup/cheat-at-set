@@ -13,7 +13,10 @@ export function thresholded(image, value) {
     r = result.data,
     d = image.data
   for (let i = 0; i < d.length; i += 4) {
-    r[i] = r[i + 1] = r[i + 2] = threshold(luminosity(d[i], d[i + 1], d[i + 2]), value)
+    r[i] = r[i + 1] = r[i + 2] = threshold(
+      luminosity(d[i], d[i + 1], d[i + 2]),
+      value
+    )
     r[i + 3] = d[i + 3]
   }
 
