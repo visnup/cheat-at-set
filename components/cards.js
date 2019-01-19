@@ -8,7 +8,7 @@ import number from './attributes/number'
 import shade from './attributes/shade'
 import shape from './attributes/shape'
 
-export function thresholded(image, value = 212) {
+export function thresholded(image, value) {
   const result = new ImageData(image.width, image.height),
     r = result.data,
     d = image.data
@@ -75,11 +75,11 @@ function transform(image, rectangle) {
   return card
 }
 
-function contours(image) {
+function contours(image, threshold) {
   const min = 100,
     max = 300
 
-  return contourFinder(thresholded(image))
+  return contourFinder(thresholded(image, threshold))
     .filter(c => min < c.length && c.length < max) // complicated enough to be shapes, smaller than the entire card
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
   // filter on polygonArea?
@@ -108,12 +108,12 @@ function whiteBalance(image) {
 }
 
 class Card {
-  constructor(image, contour) {
+  constructor(image, contour, threshold) {
     this.contour = contour
     this.rectangle = rectangle(contour)
     this.image = transform(image, this.rectangle)
     this.whiteBalanced = whiteBalance(this.image)
-    this.contours = contours(this.image)
+    this.contours = contours(this.image, threshold)
 
     this.color = color(this.whiteBalanced)
     this.shade = shade(this.whiteBalanced, this.contours)
@@ -128,7 +128,7 @@ export default function cards(image, threshold = 212) {
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
     .map(polygonHull)
     .sortBy(polygonArea)
-    .map(contour => new Card(image, contour))
+    .map(contour => new Card(image, contour, threshold))
     .filter(card => card.shape && card.number && card.color && card.shade)
     .take(12)
     .value()
