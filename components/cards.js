@@ -8,15 +8,12 @@ import number from './attributes/number'
 import shade from './attributes/shade'
 import shape from './attributes/shape'
 
-export function thresholded(image, value) {
+export function thresholded(image) {
   const result = new ImageData(image.width, image.height),
     r = result.data,
     d = image.data
   for (let i = 0; i < d.length; i += 4) {
-    r[i] = r[i + 1] = r[i + 2] = threshold(
-      luminosity(d[i], d[i + 1], d[i + 2]),
-      value
-    )
+    r[i] = r[i + 1] = r[i + 2] = threshold(luminosity(d[i], d[i + 1], d[i + 2]))
     r[i + 3] = d[i + 3]
   }
 
@@ -78,11 +75,11 @@ function transform(image, rectangle) {
   return card
 }
 
-function contours(image, threshold) {
+function contours(image) {
   const min = 100,
     max = 300
 
-  return contourFinder(thresholded(image, threshold))
+  return contourFinder(thresholded(image))
     .filter(c => min < c.length && c.length < max) // complicated enough to be shapes, smaller than the entire card
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
   // filter on polygonArea?
@@ -111,12 +108,12 @@ function whiteBalance(image) {
 }
 
 class Card {
-  constructor(image, contour, threshold) {
+  constructor(image, contour) {
     this.contour = contour
     this.rectangle = rectangle(contour)
     this.image = transform(image, this.rectangle)
     this.whiteBalanced = whiteBalance(this.image)
-    this.contours = contours(this.image, threshold)
+    this.contours = contours(this.image)
 
     this.color = color(this.whiteBalanced)
     this.shade = shade(this.whiteBalanced, this.contours)
@@ -125,13 +122,13 @@ class Card {
   }
 }
 
-export default function cards(image, threshold = 212) {
-  return chain(contourFinder(thresholded(image, threshold)))
+export default function cards(image) {
+  return chain(contourFinder(thresholded(image)))
     .filter(c => c.length > 300) // large enough ones to be cards
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
     .map(polygonHull)
     .sortBy(polygonArea)
-    .map(contour => new Card(image, contour, threshold))
+    .map(contour => new Card(image, contour))
     .filter(card => card.shape && card.number && card.color && card.shade)
     .take(12)
     .value()

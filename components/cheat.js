@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { color } from 'd3-color'
 import { schemeCategory10 } from 'd3-scale-chromatic'
+import { threshold } from './luminosity'
 import cards, { thresholded } from './cards'
 import sets from './sets'
 
@@ -12,10 +13,7 @@ const colors = schemeCategory10.map(c => {
 })
 
 class Cheat extends Component {
-  state = {
-    adjustThreshold: false,
-    threshold: 212
-  }
+  state = { adjustThreshold: null }
 
   async componentDidMount() {
     const src = await navigator.mediaDevices.getUserMedia({
@@ -39,14 +37,14 @@ class Cheat extends Component {
 
     const ctx = canvas.getContext('2d')
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-    // console.time('cards')
+    console.time('cards')
     const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
     if (this.state.adjustThreshold)
-      ctx.putImageData(thresholded(image, this.state.threshold), 0, 0)
+      ctx.putImageData(thresholded(image), 0, 0)
 
     let i = 0
-    for (const set of sets(cards(image, this.state.threshold))) {
+    for (const set of sets(cards(image))) {
       ctx.strokeStyle = colors[i++ % colors.length]
       for (const card of set) {
         ctx.lineWidth = card.width = card.width || 18
@@ -57,26 +55,28 @@ class Cheat extends Component {
         ctx.stroke()
       }
     }
-    // console.timeEnd('cards')
+    console.timeEnd('cards')
 
-    requestAnimationFrame(this.loop)
+    // requestAnimationFrame(this.loop)
+    setTimeout(this.loop, 100)
   }
 
   toggleThreshold = event => {
-    this.setState({
-      adjustThreshold:
-        (event.type === 'mousedown' || event.type === 'touchstart') &&
-        (event.screenY || event.touches[0].screenY)
-    })
+    if (event.type === 'mousedown' || event.type === 'touchstart')
+      this.setState({
+        adjustThreshold: {
+          value: threshold.value,
+          screenY: event.screenY || event.touches[0].screenY,
+        }
+      })
+    else
+      this.setState({ adjustThreshold: null })
   }
 
   moveThreshold = event => {
     if (this.state.adjustThreshold) {
-      const screenY = event.screenY || event.touches[0].screenY
-      this.setState({
-        threshold: this.state.threshold + screenY - this.state.adjustThreshold,
-        adjustThreshold: screenY
-      })
+      const { value, screenY } = this.state.adjustThreshold
+      threshold.value = value + (event.screenY || event.touches[0].screenY) - screenY
     }
   }
 

@@ -2,7 +2,7 @@ import { extent } from 'd3-array'
 import { scaleThreshold } from 'd3-scale'
 import { luminosity } from '../luminosity'
 
-const threshold = scaleThreshold()
+const scale = scaleThreshold()
   .domain([180, 240])
   .range(['solid', 'striped', 'outlined'])
 
@@ -28,5 +28,5 @@ function interiorLuminosity(image, contours) {
 
 export default function shade(image, contours) {
   if (!contours.length) return null
-  return threshold(interiorLuminosity(image, contours))
+  return scale(interiorLuminosity(image, contours))
 }
