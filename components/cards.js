@@ -40,7 +40,7 @@ function rectangle(points) {
   // try to correct vertex order (counter-clockwise from top right corner (upside down is ok))
   const edges = [
     polygonLength([rect[1], rect[0]]),
-    polygonLength([rect[2], rect[1]])
+    polygonLength([rect[2], rect[1]]),
   ]
   if (edges[1] > edges[0])
     // need to rotate starting vertex
@@ -57,7 +57,7 @@ function transform(image, rectangle) {
       [cw + crop, -crop],
       [-crop, -crop],
       [-crop, ch + crop],
-      [cw + crop, ch + crop]
+      [cw + crop, ch + crop],
     ])
 
   const tx = perspectiveTransform(_.flatten(rectangle), target)

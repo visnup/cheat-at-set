@@ -21,7 +21,7 @@ class Cheat extends Component {
 
   async componentDidMount() {
     const src = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
+      video: { facingMode: 'environment' },
     })
     this.video.srcObject = src
 
@@ -82,8 +82,8 @@ class Cheat extends Component {
       this.setState({
         adjustThreshold: {
           value: threshold.value,
-          screenY: screenY(event)
-        }
+          screenY: screenY(event),
+        },
       })
     else this.setState({ adjustThreshold: null })
   }
