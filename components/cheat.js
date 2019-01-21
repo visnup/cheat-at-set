@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { color } from 'd3-color'
 import { schemeCategory10 } from 'd3-scale-chromatic'
+import { throttle } from 'lodash'
 import { threshold } from './luminosity'
 import findCards, { thresholded } from './cards'
 import sets from './sets'
@@ -17,7 +18,10 @@ function screenY(event) {
 }
 
 class Cheat extends Component {
-  state = { adjustThreshold: null }
+  state = {
+    adjustThreshold: null,
+    debug: false,
+  }
 
   async componentDidMount() {
     const src = await navigator.mediaDevices.getUserMedia({
@@ -36,7 +40,9 @@ class Cheat extends Component {
   }
 
   loop = () => {
-    this.draw()
+    const image = this.draw()
+    if (this.state.debug)
+      this.debug(image)
     requestAnimationFrame(this.loop)
     // setTimeout(this.loop, 100)
   }
@@ -75,7 +81,28 @@ class Cheat extends Component {
         ctx.stroke()
       }
     }
+
+    return image
   }
+
+  _debug(image) {
+    if (!this.state.debug) return
+
+    const canvas = document.createElement('canvas')
+    canvas.width = image.width
+    canvas.height = image.height
+    const ctx = canvas.getContext('2d')
+    ctx.putImageData(image, 0, 0)
+    fetch('/api/debug', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image: canvas.toDataURL(),
+        batch: this.state.debug,
+      })
+    })
+  }
+  debug = throttle(this._debug, 1000)
 
   toggleThreshold = event => {
     if (event.type === 'mousedown' || event.type === 'touchstart')
@@ -95,6 +122,10 @@ class Cheat extends Component {
         adjustThreshold.value + screenY(event) - adjustThreshold.screenY
   }
 
+  onChangeDebug = event => {
+    this.setState({ debug: event.target.checked && Date.now() })
+  }
+
   render() {
     return (
       <div
@@ -108,12 +139,17 @@ class Cheat extends Component {
       >
         <video ref={ref => (this.video = ref)} autoPlay muted playsInline />
         <canvas ref={ref => (this.canvas = ref)} />
+        <label>
+          <input type="checkbox" checked={!!this.state.debug} onChange={this.onChangeDebug} /> Debug
+        </label>
       </div>
     )
   }
 }
 
 export default styled(Cheat)`
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
   user-select: none;
 
   video,
@@ -129,5 +165,13 @@ export default styled(Cheat)`
   canvas {
     width: 100vw;
     height: auto;
+  }
+
+  label {
+    display: inline-block;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    color: white;
   }
 `
