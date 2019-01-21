@@ -110,6 +110,7 @@ function whiteBalance(image) {
 class Card {
   constructor(image, contour) {
     this.contour = contour
+    this.area = polygonArea(contour)
     this.rectangle = rectangle(contour)
     this.image = transform(image, this.rectangle)
     this.whiteBalanced = whiteBalance(this.image)
@@ -119,17 +120,29 @@ class Card {
     this.shade = shade(this.whiteBalanced, this.contours)
     this.number = number(this.contours, this.image.width)
     this.shape = shape(this.contours, this.image.width, this.image.height)
+
+    this.valid = this.shade && this.shape && this.number && this.color
+  }
+
+  toString() {
+    return `<shade=${this.shade} shape=${this.shape} number=${this.number} color=${this.color}>`
   }
 }
 
 export default function cards(image) {
+  const area = image.width * image.height,
+        areaExtent = [ area / 100, area / 5 ]
   return chain(contourFinder(thresholded(image)))
-    .filter(c => c.length > 300) // large enough ones to be cards
+    .filter(c => c.length > 4) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
-    .map(polygonHull)
-    .sortBy(polygonArea)
-    .map(contour => new Card(image, contour))
-    .filter(card => card.shape && card.number && card.color && card.shade)
-    .take(12)
+    .map(contour => {
+      const hull = polygonHull(contour)
+      return { hull, area: polygonArea(hull) }
+    })
+    .filter(({ area }) => areaExtent[0] < area && area < areaExtent[1])
+    .map(({ hull }) => new Card(image, hull))
+    .filter('valid')
+    .sortBy('area')
+    .take(16)
     .value()
 }
