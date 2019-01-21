@@ -15,3 +15,10 @@ services:
 
   db:
     image: mongo:4.1.6-xenial
+
+
+  prettier:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules

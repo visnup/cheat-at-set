@@ -1,0 +1,13 @@
+{
+  "name": "cheat-at-set",
+  "version": "1.0.0",
+  "description": "",
+  "devDependencies": {
+    "prettier": "1.16.0"
+  },
+  "scripts": {
+    "format": "prettier --write .babelrc api/**/*.js next/**/*.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
