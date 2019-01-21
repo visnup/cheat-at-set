@@ -12,6 +12,10 @@ const colors = schemeCategory10.map(c => {
   return c
 })
 
+function screenY(event) {
+  return event.screenY || event.touches[0].screenY
+}
+
 class Cheat extends Component {
   state = { adjustThreshold: null }
 
@@ -78,18 +82,17 @@ class Cheat extends Component {
       this.setState({
         adjustThreshold: {
           value: threshold.value,
-          screenY: event.screenY || event.touches[0].screenY
+          screenY: screenY(event)
         }
       })
     else this.setState({ adjustThreshold: null })
   }
 
   moveThreshold = event => {
-    if (this.state.adjustThreshold) {
-      const { value, screenY } = this.state.adjustThreshold
+    const { adjustThreshold } = this.state
+    if (adjustThreshold)
       threshold.value =
-        value + (event.screenY || event.touches[0].screenY) - screenY
-    }
+        adjustThreshold.value + screenY(event) - adjustThreshold.screenY
   }
 
   render() {
