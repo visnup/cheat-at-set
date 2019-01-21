@@ -32,6 +32,12 @@ class Cheat extends Component {
   }
 
   loop = () => {
+    this.draw()
+    requestAnimationFrame(this.loop)
+    // setTimeout(this.loop, 100)
+  }
+
+  draw() {
     const { video, canvas } = this
     if (!video || !canvas) return
 
@@ -42,9 +48,7 @@ class Cheat extends Component {
     if (this.state.adjustThreshold)
       ctx.putImageData(thresholded(image), 0, 0)
 
-    console.time('cards')
     const cards = findCards(image)
-    console.timeEnd('cards')
     ctx.strokeStyle = 'black'
     ctx.lineWidth = 2
     for (const card of cards) {
@@ -68,9 +72,6 @@ class Cheat extends Component {
         ctx.stroke()
       }
     }
-
-    requestAnimationFrame(this.loop)
-    // setTimeout(this.loop, 100)
   }
 
   toggleThreshold = event => {
