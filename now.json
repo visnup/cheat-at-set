@@ -1,5 +1,8 @@
 {
   "version": 2,
-  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
-  "alias": "set.visnup.com"
+  "alias": "set.visnup.com",
+  "builds": [
+    { "src": "next.config.js", "use": "@now/next" },
+    { "src": "/api/*/index.js", "use": "@now/node" }
+  ]
 }
