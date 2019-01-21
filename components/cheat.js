@@ -45,8 +45,7 @@ class Cheat extends Component {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
     const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-    if (this.state.adjustThreshold)
-      ctx.putImageData(thresholded(image), 0, 0)
+    if (this.state.adjustThreshold) ctx.putImageData(thresholded(image), 0, 0)
 
     const cards = findCards(image)
     ctx.strokeStyle = 'black'
@@ -79,17 +78,17 @@ class Cheat extends Component {
       this.setState({
         adjustThreshold: {
           value: threshold.value,
-          screenY: event.screenY || event.touches[0].screenY,
+          screenY: event.screenY || event.touches[0].screenY
         }
       })
-    else
-      this.setState({ adjustThreshold: null })
+    else this.setState({ adjustThreshold: null })
   }
 
   moveThreshold = event => {
     if (this.state.adjustThreshold) {
       const { value, screenY } = this.state.adjustThreshold
-      threshold.value = value + (event.screenY || event.touches[0].screenY) - screenY
+      threshold.value =
+        value + (event.screenY || event.touches[0].screenY) - screenY
     }
   }
 
@@ -119,9 +118,9 @@ export default styled(Cheat)`
     position: absolute;
     top: 50%;
     left: 50%;
-    opacity: 0;
     width: 1px;
     height: 1px;
+    opacity: 0;
   }
 
   canvas {

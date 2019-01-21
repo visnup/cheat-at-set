@@ -125,13 +125,15 @@ class Card {
   }
 
   toString() {
-    return `<shade=${this.shade} shape=${this.shape} number=${this.number} color=${this.color}>`
+    return `<shade=${this.shade} shape=${this.shape} number=${
+      this.number
+    } color=${this.color}>`
   }
 }
 
 export default function cards(image) {
   const area = image.width * image.height,
-        areaExtent = [ area / 100, area / 5 ]
+    areaExtent = [area / 100, area / 5]
   return chain(contourFinder(thresholded(image)))
     .filter(c => c.length > 4) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
