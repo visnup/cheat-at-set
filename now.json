@@ -2,7 +2,11 @@
   "version": 2,
   "alias": "set.visnup.com",
   "builds": [
-    { "src": "/next/next.config.js", "use": "@now/next" },
-    { "src": "/api/*/index.js", "use": "@now/node" }
+    { "src": "/api/*/index.js", "use": "@now/node" },
+    { "src": "/next/next.config.js", "use": "@now/next" }
+  ],
+  "routes": [
+      { "src": "/api/(.*)", "dest": "/api/$1" },
+      { "src": "/(.*)", "dest": "/next/$1" }
   ]
 }
