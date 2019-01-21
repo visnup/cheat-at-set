@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { color } from 'd3-color'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { threshold } from './luminosity'
-import cards, { thresholded } from './cards'
+import findCards, { thresholded } from './cards'
 import sets from './sets'
 
 const colors = schemeCategory10.map(c => {
@@ -37,14 +37,27 @@ class Cheat extends Component {
 
     const ctx = canvas.getContext('2d')
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-    console.time('cards')
     const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
     if (this.state.adjustThreshold)
       ctx.putImageData(thresholded(image), 0, 0)
 
+    console.time('cards')
+    const cards = findCards(image)
+    console.timeEnd('cards')
+    ctx.strokeStyle = 'black'
+    ctx.lineWidth = 2
+    for (const card of cards) {
+      console.log(card.toString())
+      ctx.beginPath()
+      for (const [x, y] of card.contour) ctx.lineTo(x, y)
+      ctx.closePath()
+      ctx.stroke()
+    }
+
     let i = 0
-    for (const set of sets(cards(image))) {
+    for (const set of sets(cards)) {
+      console.log(set)
       ctx.strokeStyle = colors[i++ % colors.length]
       for (const card of set) {
         ctx.lineWidth = card.width = card.width || 18
@@ -55,10 +68,9 @@ class Cheat extends Component {
         ctx.stroke()
       }
     }
-    console.timeEnd('cards')
 
-    // requestAnimationFrame(this.loop)
-    setTimeout(this.loop, 100)
+    requestAnimationFrame(this.loop)
+    // setTimeout(this.loop, 100)
   }
 
   toggleThreshold = event => {
