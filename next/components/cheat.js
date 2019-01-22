@@ -84,7 +84,7 @@ class Cheat extends Component {
     return image
   }
 
-  _debug(image) {
+  async _debug(image) {
     if (!this.state.debug) return
 
     const canvas = document.createElement('canvas')
@@ -92,14 +92,18 @@ class Cheat extends Component {
     canvas.height = image.height
     const ctx = canvas.getContext('2d')
     ctx.putImageData(image, 0, 0)
-    fetch('/api/debug', {
+    await fetch('/api/debug', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         image: canvas.toDataURL(),
-        batch: this.state.debug,
+        batch: this.state.debug.batch,
         threshold: threshold.value,
       }),
+    })
+    this.setState(state => {
+      if (state.debug)
+        return { debug: { ...state.debug, saved: state.debug.saved + 1 } }
     })
   }
   debug = throttle(this._debug, 1000)
@@ -123,7 +127,9 @@ class Cheat extends Component {
   }
 
   onChangeDebug = event => {
-    this.setState({ debug: event.target.checked && Date.now() })
+    this.setState({
+      debug: event.target.checked && { batch: Date.now(), saved: 0 },
+    })
   }
 
   render() {
@@ -145,7 +151,9 @@ class Cheat extends Component {
             checked={!!this.state.debug}
             onChange={this.onChangeDebug}
           />{' '}
-          Debug
+          {this.state.debug ? (
+            `${this.state.debug.batch} (${this.state.debug.saved})`
+          ) : 'Debug'}
         </label>
       </div>
     )
@@ -177,6 +185,6 @@ export default styled(Cheat)`
     position: fixed;
     bottom: 10px;
     right: 10px;
-    color: white;
+    color: gray;
   }
 `

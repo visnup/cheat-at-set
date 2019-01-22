@@ -1,7 +1,6 @@
 const MongoClient = require('mongodb').MongoClient
 
-if (!process.env.DB_URL)
-  throw new Error('Missing env DB_URL')
+if (!process.env.DB_URL) throw new Error('Missing env DB_URL')
 
 let client = null
 

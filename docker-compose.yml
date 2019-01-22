@@ -32,6 +32,8 @@ services:
 
   db:
     image: mongo:4.1.6-xenial
+    environment:
+      - DB_URL
     volumes:
       - .:/app
       - db:/data/db
