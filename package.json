@@ -9,7 +9,7 @@
     "prettier": "1.16.0"
   },
   "scripts": {
-    "format": "prettier --write .babelrc api/**/*.js next/**/*.js",
+    "format": "prettier --write .babelrc *.json api/**/*.js next/**/*.js",
     "start": "micro-proxy -r proxy.json -p 80 -H 0.0.0.0"
   },
   "author": "",
