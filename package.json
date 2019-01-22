@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "dependencies": {
-    "micro-proxy": "^1.1.0"
+    "micro-proxy": "1.1.0"
   },
   "devDependencies": {
     "prettier": "1.16.0"
