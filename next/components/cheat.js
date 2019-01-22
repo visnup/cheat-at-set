@@ -98,6 +98,7 @@ class Cheat extends Component {
       body: JSON.stringify({
         image: canvas.toDataURL(),
         batch: this.state.debug,
+        threshold: threshold.value,
       }),
     })
   }
