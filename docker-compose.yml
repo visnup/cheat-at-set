@@ -25,13 +25,16 @@ services:
       - ./api/debug:/app
       - /app/node_modules
     environment:
-      - DB_URL=mongodb://db:27017
+      - DB_URL=mongodb://db:27017/debug
     depends_on:
       - db
     command: npm run dev
 
   db:
     image: mongo:4.1.6-xenial
+    volumes:
+      - .:/app
+      - db:/data/db
 
   prettier:
     build: .
@@ -39,3 +42,6 @@ services:
       - .:/app
       - /app/node_modules
     command: npm run format
+
+volumes:
+  db:
