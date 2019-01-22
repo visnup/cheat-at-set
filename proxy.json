@@ -1,0 +1,6 @@
+{
+  "rules": [
+    { "pathname": "/api", "dest": "http://debug:3000" },
+    { "pathname": "/**", "dest": "http://next:3000" }
+  ]
+}

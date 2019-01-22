@@ -1,0 +1,32 @@
+{
+  "name": "cheat-at-set-next",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "combinations-generator": "^1.0.1",
+    "contours": "^1.0.1",
+    "d3-array": "^2.0.3",
+    "d3-color": "^1.2.3",
+    "d3-polygon": "^1.0.5",
+    "d3-scale": "^2.1.2",
+    "d3-scale-chromatic": "^1.3.3",
+    "lodash": "^4.17.11",
+    "next": "^7.0.2",
+    "perspective-transform": "^1.1.3",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "styled-components": "^4.1.3"
+  },
+  "devDependencies": {
+    "babel-plugin-styled-components": "1.10.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "author": "",
+  "license": "ISC"
+}

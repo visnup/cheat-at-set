@@ -8,4 +8,5 @@ RUN npm install
 
 COPY . /app/
 
-CMD npm start
+# RUN node_modules/.bin/next build
+CMD node_modules/.bin/next start

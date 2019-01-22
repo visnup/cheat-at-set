@@ -41,8 +41,7 @@ class Cheat extends Component {
 
   loop = () => {
     const image = this.draw()
-    if (this.state.debug)
-      this.debug(image)
+    if (this.state.debug) this.debug(image)
     requestAnimationFrame(this.loop)
     // setTimeout(this.loop, 100)
   }
@@ -99,7 +98,8 @@ class Cheat extends Component {
       body: JSON.stringify({
         image: canvas.toDataURL(),
         batch: this.state.debug,
-      })
+        threshold: threshold.value,
+      }),
     })
   }
   debug = throttle(this._debug, 1000)
@@ -140,7 +140,12 @@ class Cheat extends Component {
         <video ref={ref => (this.video = ref)} autoPlay muted playsInline />
         <canvas ref={ref => (this.canvas = ref)} />
         <label>
-          <input type="checkbox" checked={!!this.state.debug} onChange={this.onChangeDebug} /> Debug
+          <input
+            type="checkbox"
+            checked={!!this.state.debug}
+            onChange={this.onChangeDebug}
+          />{' '}
+          Debug
         </label>
       </div>
     )
