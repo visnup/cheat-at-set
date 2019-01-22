@@ -8,5 +8,8 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/next/$1" }
-  ]
+  ],
+  "env": {
+    "DB_URL": "@cheat-at-set-debug-db-url"
+  }
 }

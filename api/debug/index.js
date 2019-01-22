@@ -7,15 +7,14 @@ let batches = null
 
 client.connect(err => {
   if (err) return console.log(err)
-  const db = client.db('set')
-  batches = db.collection('batches')
+  batches = client.db().collection('batches')
 })
 
 module.exports = async function(req, res) {
   try {
     const body = await parse(req, req.headers, { limit: 1024 * 1024 })
     if (batches) {
-      const { ops } = await batches.insert(body)
+      const { ops } = await batches.insertOne(body)
       const result = { _id: ops[0]._id, batch: ops[0].batch }
       console.log(result)
       res.end(JSON.stringify(result), 'application/json')
