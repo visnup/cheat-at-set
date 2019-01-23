@@ -125,7 +125,7 @@ class Card {
   }
 
   toJSON() {
-    return pick(this, ['shade', 'shape', 'number', 'color'])
+    return pick(this, ['shade', 'shape', 'number', 'color', 'rectangle'])
   }
 
   toString() {

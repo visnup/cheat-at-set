@@ -2,7 +2,7 @@ import { Component } from 'react'
 import Link from 'next/link'
 import { withRouter } from 'next/router'
 import fetch from 'isomorphic-unfetch'
-import { groupBy, keyBy } from 'lodash'
+import { groupBy, keyBy, sortBy } from 'lodash'
 import Page from '../components/page'
 
 class Debug extends Component {
@@ -44,6 +44,7 @@ export default withRouter(Debug)
 const Index = ({ batches }) => (
   <div>
     {Object.entries(batches).map(([id, samples]) => {
+      samples = sortBy(samples, s => -s.cards.length * 100 - s.sets.length)
       return (
         <div key={id}>
           <h3>{id}</h3>
