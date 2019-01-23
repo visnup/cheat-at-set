@@ -1,7 +1,7 @@
 const { json } = require('micro')
 const getDb = require('./db')
 
-module.exports = async function(req, res) {
+module.exports = async function(req) {
   const batches = (await getDb()).collection('batches')
 
   if (req.method === 'POST') {
