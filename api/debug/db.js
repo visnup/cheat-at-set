@@ -11,7 +11,7 @@ module.exports = function getDb() {
   }
 
   if (client === null) {
-    client = new MongoClient(process.env.DB_URL)
+    client = new MongoClient(process.env.DB_URL, { useNewUrlParser: true })
     console.log('[mongo] client init')
   } else if (client.isConnected) {
     return client.db()
