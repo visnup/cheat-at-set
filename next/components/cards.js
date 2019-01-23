@@ -1,5 +1,5 @@
 import { polygonArea, polygonHull, polygonLength } from 'd3-polygon'
-import chain from 'lodash'
+import { chain, pick } from 'lodash'
 import contourFinder from 'contours'
 import perspectiveTransform from 'perspective-transform'
 import { luminosity, threshold } from './luminosity'
@@ -124,10 +124,12 @@ class Card {
     this.valid = this.shade && this.shape && this.number && this.color
   }
 
+  toJSON() {
+    return pick(this, ['shade', 'shape', 'number', 'color'])
+  }
+
   toString() {
-    return `<shade=${this.shade} shape=${this.shape} number=${
-      this.number
-    } color=${this.color}>`
+    return JSON.stringify(this.toJSON())
   }
 }
 

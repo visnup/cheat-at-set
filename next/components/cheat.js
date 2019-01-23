@@ -5,7 +5,7 @@ import { schemeCategory10 } from 'd3-scale-chromatic'
 import { throttle } from 'lodash'
 import { threshold } from './luminosity'
 import findCards, { thresholded } from './cards'
-import sets from './sets'
+import findSets from './sets'
 
 const colors = schemeCategory10.map(c => {
   c = color(c)
@@ -40,8 +40,8 @@ class Cheat extends Component {
   }
 
   loop = () => {
-    const image = this.draw()
-    if (this.state.debug) this.debug(image)
+    const result = this.draw()
+    if (this.state.debug) this.debug(result)
     requestAnimationFrame(this.loop)
     // setTimeout(this.loop, 100)
   }
@@ -68,7 +68,8 @@ class Cheat extends Component {
     }
 
     let i = 0
-    for (const set of sets(cards)) {
+    const sets = findSets(cards)
+    for (const set of sets) {
       console.log(set)
       ctx.strokeStyle = colors[i++ % colors.length]
       for (const card of set) {
@@ -81,10 +82,10 @@ class Cheat extends Component {
       }
     }
 
-    return image
+    return { image, cards, sets }
   }
 
-  async _debug(image) {
+  async _debug({ image, cards, sets }) {
     if (!this.state.debug) return
 
     const canvas = document.createElement('canvas')
@@ -99,6 +100,8 @@ class Cheat extends Component {
         image: canvas.toDataURL(),
         batch: this.state.debug.batch,
         threshold: threshold.value,
+        cards: cards.map(card => card.toJSON()),
+        sets: sets.map(set => set.map(card => card.toJSON())),
       }),
     })
     this.setState(state => {
@@ -151,9 +154,9 @@ class Cheat extends Component {
             checked={!!this.state.debug}
             onChange={this.onChangeDebug}
           />{' '}
-          {this.state.debug ? (
-            `${this.state.debug.batch} (${this.state.debug.saved})`
-          ) : 'Debug'}
+          {this.state.debug
+            ? `${this.state.debug.batch} (${this.state.debug.saved})`
+            : 'Debug'}
         </label>
       </div>
     )
