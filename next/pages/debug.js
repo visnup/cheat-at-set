@@ -3,7 +3,9 @@ import Link from 'next/link'
 import { withRouter } from 'next/router'
 import fetch from 'isomorphic-unfetch'
 import { groupBy, keyBy, omit, omitBy, sortBy } from 'lodash'
+
 import Page from '../components/page'
+import Show from '../components/debug/show'
 
 class Debug extends Component {
   state = {
@@ -40,7 +42,7 @@ class Debug extends Component {
       <Page {...this.props}>
         {isLoading && <p>Loading…</p>}
         {query.id ? (
-          <Show debug={byId[query.id]} />
+          <Show sample={byId[query.id]} />
         ) : (
           <Index batches={byBatch} onDelete={this.onDelete} />
         )}
@@ -88,14 +90,3 @@ const Index = ({ batches, onDelete }) => (
     `}</style>
   </div>
 )
-
-const Show = ({ debug }) => {
-  if (!debug) return null
-
-  return (
-    <div>
-      <img src={debug.image} />
-      {debug.cards.length}
-    </div>
-  )
-}

@@ -107,7 +107,7 @@ function whiteBalance(image) {
   return result
 }
 
-class Card {
+export class Card {
   constructor(image, contour) {
     this.contour = contour
     this.area = polygonArea(contour)
@@ -125,7 +125,7 @@ class Card {
   }
 
   toJSON() {
-    return pick(this, ['shade', 'shape', 'number', 'color', 'rectangle'])
+    return pick(this, ['shade', 'shape', 'number', 'color', 'contour'])
   }
 
   toString() {
