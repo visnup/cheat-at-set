@@ -1,10 +1,9 @@
 import { Component } from 'react'
-import styled from 'styled-components'
 import fetch from 'isomorphic-unfetch'
 import { groupBy } from 'lodash'
 import Page from '../components/page'
 
-class Debug extends Component {
+export default class Debug extends Component {
   state = {
     isLoading: false,
     batches: [],
@@ -40,21 +39,18 @@ class Debug extends Component {
             </div>
           )
         })}
+        <style jsx>{`
+          .image {
+            display: inline-block;
+            text-align: center;
+            margin: 5px 0;
+          }
+
+          .image img {
+            height: 100px;
+          }
+        `}</style>
       </Page>
     )
   }
 }
-
-const Styled = styled(Debug)`
-  .image {
-    display: inline-block;
-    text-align: center;
-    margin: 5px 0;
-  }
-
-  .image img {
-    height: 100px;
-  }
-`
-
-export default () => <Styled />

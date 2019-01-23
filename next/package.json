@@ -16,8 +16,7 @@
     "next": "^7.0.2",
     "perspective-transform": "^1.1.3",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "styled-components": "^4.1.3"
+    "react-dom": "^16.7.0"
   },
   "devDependencies": {
     "babel-plugin-styled-components": "1.10.0"

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import styled from 'styled-components'
 import { color } from 'd3-color'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { throttle } from 'lodash'
@@ -18,7 +17,7 @@ function screenY(event) {
   return event.screenY || event.touches[0].screenY
 }
 
-class Cheat extends Component {
+export default class Cheat extends Component {
   state = {
     adjustThreshold: null,
     debug: false,
@@ -159,36 +158,33 @@ class Cheat extends Component {
             ? `${this.state.debug.batch} (${this.state.debug.saved})`
             : 'Debug'}
         </label>
+        <style jsx>{`
+          user-select: none;
+
+          video,
+          img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+          }
+
+          canvas {
+            width: 100vw;
+            height: auto;
+          }
+
+          label {
+            display: inline-block;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: gray;
+          }
+        `}</style>
       </Page>
     )
   }
 }
-
-const Styled = styled(Cheat)`
-  user-select: none;
-
-  video,
-  img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-  }
-
-  canvas {
-    width: 100vw;
-    height: auto;
-  }
-
-  label {
-    display: inline-block;
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    color: gray;
-  }
-`
-
-export default () => <Styled />

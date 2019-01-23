@@ -1,7 +1,6 @@
 import Head from 'next/head'
-import styled from 'styled-components'
 
-const Page = props => (
+export default props => (
   <div {...props}>
     <Head>
       <meta
@@ -15,10 +14,9 @@ const Page = props => (
       <title>Cheat at Set</title>
     </Head>
     {props.children}
+    <style jsx>{`
+      font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    `}</style>
   </div>
 )
-
-export default styled(Page)`
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-`
