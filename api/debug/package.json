@@ -13,7 +13,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "micro",
-    "dev": "micro-dev"
+    "dev": "micro-dev --silent"
   },
   "author": "",
   "license": "ISC"
