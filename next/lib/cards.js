@@ -1,5 +1,5 @@
 import { polygonArea, polygonHull, polygonLength } from 'd3-polygon'
-import { chain, pick } from 'lodash'
+import { chain, inRange, pick } from 'lodash'
 import contourFinder from 'contours'
 import perspectiveTransform from 'perspective-transform'
 import { luminosity, threshold } from './luminosity'
@@ -76,13 +76,13 @@ function transform(image, rectangle) {
 }
 
 function contours(image) {
-  const min = 100,
-    max = 300
-
-  return contourFinder(thresholded(image))
-    .filter(c => min < c.length && c.length < max) // complicated enough to be shapes, smaller than the entire card
+  const area = image.width * image.height
+  return chain(contourFinder(thresholded(image)))
+    .filter(c => c.length > 4) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
-  // filter on polygonArea?
+    .map(polygonHull)
+    .filter(hull => inRange(polygonArea(hull), area / 10, area / 5))
+    .value()
 }
 
 function whiteBalance(image) {
@@ -134,17 +134,13 @@ class Card {
 }
 
 export default function cards(image) {
-  const area = image.width * image.height,
-    areaExtent = [area / 100, area / 5]
+  const area = image.width * image.height
   return chain(contourFinder(thresholded(image)))
     .filter(c => c.length > 4) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
-    .map(contour => {
-      const hull = polygonHull(contour)
-      return { hull, area: polygonArea(hull) }
-    })
-    .filter(({ area }) => areaExtent[0] < area && area < areaExtent[1])
-    .map(({ hull }) => new Card(image, hull))
+    .map(polygonHull)
+    .filter(hull => inRange(polygonArea(hull), area / 100, area / 5))
+    .map(hull => new Card(image, hull))
     .filter('valid')
     .sortBy('area')
     .take(16)
