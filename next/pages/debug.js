@@ -34,6 +34,11 @@ class Debug extends Component {
     }))
   }
 
+  onCorrect = event => {
+    const id = event.target.name
+    fetch(`/api/debug?id=${id}`, { method: 'PATCH' })
+  }
+
   render() {
     const { query } = this.props.router
     const { isLoading, byBatch, byId } = this.state
@@ -42,7 +47,7 @@ class Debug extends Component {
       <Page {...this.props}>
         {isLoading && <p>Loading…</p>}
         {query.id ? (
-          <Show sample={byId[query.id]} />
+          <Show sample={byId[query.id]} onCorrect={this.onCorrect} />
         ) : (
           <Index batches={byBatch} onDelete={this.onDelete} />
         )}
@@ -59,9 +64,10 @@ const Index = ({ batches, onDelete }) => (
       return (
         <div key={id}>
           <h3>
-            {id}
-            {' '}
-            <button name={id} onClick={onDelete}>🗑</button>
+            {id}{' '}
+            <button name={id} onClick={onDelete}>
+              🗑
+            </button>
           </h3>
           <div>{new Date(+id).toString()}</div>
           {samples.map((sample, i) => (

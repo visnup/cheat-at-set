@@ -4,13 +4,16 @@ import { threshold } from '../../lib/luminosity'
 
 class Show extends Component {
   render() {
-    const { sample } = this.props
+    const { sample, onCorrect } = this.props
     if (!sample) return null
 
     return (
       <div>
         <canvas ref={ref => (this.canvas = ref)} />
-        {sample.cards.length}
+        <button name={sample._id} onClick={onCorrect}>✅</button>
+        {sample.cards.map(card => (
+          <div>{card.color}</div>
+        ))}
         <style jsx>{`
           canvas {
             width: 100vw;
