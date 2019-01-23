@@ -30,7 +30,12 @@ class Debug extends Component {
             <div key={batch}>
               <h3>{batch}</h3>
               {debug.map((debug, i) => (
-                <img key={i} src={debug.image} />
+                <div className="image" key={i}>
+                  <img src={debug.image} />
+                  <div>
+                    {debug.cards.length} {debug.sets.length}
+                  </div>
+                </div>
               ))}
             </div>
           )
@@ -41,7 +46,13 @@ class Debug extends Component {
 }
 
 const Styled = styled(Debug)`
-  img {
+  .image {
+    display: inline-block;
+    text-align: center;
+    margin: 5px 0;
+  }
+
+  .image img {
     height: 100px;
   }
 `
