@@ -15,11 +15,11 @@ class Debug extends Component {
   async componentDidMount() {
     this.setState({ isLoading: true })
     const res = await fetch('/api/debug')
-    const batches = await res.json()
+    const samples = await res.json()
     this.setState({
       isLoading: false,
-      byBatch: groupBy(batches, 'batch'),
-      byId: keyBy(batches, '_id'),
+      byBatch: groupBy(samples, 'batch'),
+      byId: keyBy(samples, '_id'),
     })
   }
 
@@ -43,17 +43,18 @@ export default withRouter(Debug)
 
 const Index = ({ batches }) => (
   <div>
-    {Object.entries(batches).map(([batch, debug]) => {
+    {Object.entries(batches).map(([id, samples]) => {
       return (
-        <div key={batch}>
-          <h3>{batch}</h3>
-          {debug.map((debug, i) => (
+        <div key={id}>
+          <h3>{id}</h3>
+          <div>{new Date(+id).toString()}</div>
+          {samples.map((sample, i) => (
             <div className="image" key={i}>
-              <Link href={{ query: { id: debug._id } }}>
-                <img src={debug.image} />
+              <Link href={{ query: { id: sample._id } }}>
+                <img src={sample.image} />
               </Link>
               <div>
-                {debug.cards.length} {debug.sets.length}
+                {sample.cards.length} {sample.sets.length}
               </div>
             </div>
           ))}
