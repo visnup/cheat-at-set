@@ -2,7 +2,7 @@ import { Component } from 'react'
 import Link from 'next/link'
 import { withRouter } from 'next/router'
 import fetch from 'isomorphic-unfetch'
-import { groupBy, keyBy, sortBy } from 'lodash'
+import { groupBy, keyBy, omit, omitBy, sortBy } from 'lodash'
 import Page from '../components/page'
 
 class Debug extends Component {
@@ -23,6 +23,15 @@ class Debug extends Component {
     })
   }
 
+  onDelete = event => {
+    const batch = +event.target.name
+    fetch(`/api/debug?batch=${batch}`, { method: 'DELETE' })
+    this.setState(state => ({
+      byBatch: omit(state.byBatch, batch),
+      byId: omitBy(state.byId, sample => sample.batch === batch),
+    }))
+  }
+
   render() {
     const { query } = this.props.router
     const { isLoading, byBatch, byId } = this.state
@@ -33,7 +42,7 @@ class Debug extends Component {
         {query.id ? (
           <Show debug={byId[query.id]} />
         ) : (
-          <Index batches={byBatch} />
+          <Index batches={byBatch} onDelete={this.onDelete} />
         )}
       </Page>
     )
@@ -41,13 +50,17 @@ class Debug extends Component {
 }
 export default withRouter(Debug)
 
-const Index = ({ batches }) => (
+const Index = ({ batches, onDelete }) => (
   <div>
     {Object.entries(batches).map(([id, samples]) => {
       samples = sortBy(samples, s => -s.cards.length * 100 - s.sets.length)
       return (
         <div key={id}>
-          <h3>{id}</h3>
+          <h3>
+            {id}
+            {' '}
+            <button name={id} onClick={onDelete}>🗑</button>
+          </h3>
           <div>{new Date(+id).toString()}</div>
           {samples.map((sample, i) => (
             <div className="image" key={i}>

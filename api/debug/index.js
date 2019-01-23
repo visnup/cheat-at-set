@@ -1,4 +1,5 @@
 const { json } = require('micro')
+const { parse } = require('url')
 const getDb = require('./db')
 
 module.exports = async function(req) {
@@ -15,6 +16,9 @@ module.exports = async function(req) {
         .sort({ _id: -1 })
         .toArray()
       return sample
+    case 'DELETE':
+      const batch = +parse(req.url, true).query.batch
+      await samples.deleteMany({ batch })
     default:
       return null
   }
