@@ -6,19 +6,25 @@ import Page from '../components/page'
 
 class Debug extends Component {
   state = {
+    isLoading: false,
     batches: [],
   }
 
   async componentDidMount() {
+    this.setState({ isLoading: true })
     const res = await fetch('/api/debug')
-    this.setState({ batches: groupBy(await res.json(), 'batch') })
+    this.setState({
+      isLoading: false,
+      batches: groupBy(await res.json(), 'batch'),
+    })
   }
 
   render() {
-    const { batches } = this.state
+    const { isLoading, batches } = this.state
 
     return (
       <Page {...this.props}>
+        {isLoading && <p>Loading…</p>}
         {Object.entries(batches).map(([batch, debug]) => {
           return (
             <div key={batch}>
