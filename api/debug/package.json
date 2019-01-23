@@ -4,17 +4,16 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "get-body": "^1.0.3",
-    "mongodb": "^3.1.12",
-    "serialize-error": "^3.0.0"
+    "micro": "^9.3.3",
+    "mongodb": "^3.1.12"
   },
   "devDependencies": {
-    "nodemon": "1.18.9"
+    "micro-dev": "^3.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "micro",
+    "dev": "micro-dev"
   },
   "author": "",
   "license": "ISC"

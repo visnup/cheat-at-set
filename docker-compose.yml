@@ -26,9 +26,10 @@ services:
       - /app/node_modules
     environment:
       - DB_URL=mongodb://db:27017/debug
+      # - DB_URL
     depends_on:
       - db
-    command: npm run dev
+    # command: npm run dev
 
   db:
     image: mongo:4.1.7-xenial
