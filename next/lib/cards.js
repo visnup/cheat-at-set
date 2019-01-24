@@ -80,8 +80,7 @@ function contours(image) {
   return chain(contourFinder(thresholded(image)))
     .filter(c => c.length > 4) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
-    .map(polygonHull)
-    .filter(hull => inRange(polygonArea(hull), area / 10, area / 5))
+    .filter(contour => inRange(polygonArea(contour), area / 10, area / 5))
     .value()
 }
 
