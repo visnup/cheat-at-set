@@ -11,19 +11,26 @@ function interiorLuminosity(image, contours) {
   const shape = contours[0]
 
   // sample interior
-  const x = extent(shape, p => p[0]),
-    y = extent(shape, p => p[1]),
-    w = x[1] - x[0],
+  const xExtent = extent(shape, p => p[0]),
+    yExtent = extent(shape, p => p[1]),
+    w = xExtent[1] - xExtent[0],
     width = w / 3,
-    dw = (w - width) / 2,
-    h = y[1] - y[0],
+    dx = (w - width) / 2,
+    h = yExtent[1] - yExtent[0],
     height = h / 2,
-    dh = (h - height) / 2
+    dy = (h - height) / 2
+
   const { data } = image
-  let sum = 0
-  for (let i = 0; i < data.length; i += 4)
-    sum += data[i + 3] ? luminosity(data[i], data[i + 1], data[i + 2]) : 255
-  return (sum / data.length) * 4
+  let sum = 0, n = 0
+  for (let y = yExtent[0] + dy; y < yExtent[1] - dy; y++) {
+    for (let x = xExtent[0] + dx; x < xExtent[1] - dx; x++) {
+      const i = (y * image.width + x) * 4
+      sum += luminosity(data[i], data[i + 1], data[i + 2])
+      n++
+    }
+  }
+
+  return sum / n
 }
 
 export default function shade(image, contours) {
