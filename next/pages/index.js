@@ -85,10 +85,10 @@ export default class Cheat extends Component {
       }
     }
 
-    return { image, cards, sets }
+    return { image, cards }
   }
 
-  async _debug({ image, cards, sets }) {
+  async _debug({ image, cards }) {
     if (!this.state.debug) return
 
     const canvas = document.createElement('canvas')
