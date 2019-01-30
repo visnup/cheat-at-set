@@ -45,10 +45,12 @@ class Show extends Component {
 
     const img = new Image()
     img.src = sample.image
-    img.addEventListener('load', () => {
-      this.canvas.width = img.width
-      this.canvas.height = img.height
-      this.draw(img)
+    img.addEventListener('load', event => {
+      if (!this.canvas) return
+      const { target } = event
+      this.canvas.width = target.width
+      this.canvas.height = target.height
+      this.draw(target)
     })
   }
   componentDidUpdate = this.componentDidMount

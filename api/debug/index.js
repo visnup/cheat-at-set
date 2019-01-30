@@ -23,10 +23,11 @@ module.exports = async function(req, res) {
         const base64 = sample.image.replace('data:image/png;base64,', '')
         return Buffer.from(base64, 'base64')
       } else {
-        return await samples
+        return (await samples
           .find({}, { projection: { image: 0 } })
           .sort({ _id: -1 })
-          .toArray()
+          .toArray())
+          .map(s => ({ ...s, image: `/api/debug?id=${s._id}` }))
       }
     }
     case 'DELETE': {
