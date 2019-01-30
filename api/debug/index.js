@@ -32,7 +32,7 @@ module.exports = async function(req, res) {
     }
     case 'DELETE': {
       const batch = +parse(req.url, true).query.batch
-      await samples.deleteMany({ batch })
+      return await samples.deleteMany({ batch })
     }
     case 'PATCH': {
       const id = ObjectID.createFromHexString(parse(req.url, true).query.id)
@@ -47,6 +47,6 @@ module.exports = async function(req, res) {
       return sample
     }
     default:
-      return null
+      throw createError(405)
   }
 }
