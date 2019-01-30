@@ -73,7 +73,7 @@ const Index = ({ batches, onDelete }) => (
           {samples.map((sample, i) => (
             <div className="image" key={i}>
               <Link href={{ query: { id: sample._id } }}>
-                <img src={sample.image} />
+                <img src={`/api/debug?id=${sample._id}`} />
               </Link>
               <div>
                 {sample.cards.length} {sample.sets.length}
