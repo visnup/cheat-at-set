@@ -7,26 +7,22 @@ const scale = scaleThreshold()
   .range(['solid', 'striped', 'outlined'])
 
 function interiorLuminosity(image, contours) {
-  // single shape
-  const shape = contours[0]
-
-  // sample interior
-  const xExtent = extent(shape, p => p[0]),
-    yExtent = extent(shape, p => p[1]),
-    w = xExtent[1] - xExtent[0],
-    width = w / 3,
-    dx = (w - width) / 2,
-    h = yExtent[1] - yExtent[0],
-    height = h / 2,
-    dy = (h - height) / 2
-
   const { data } = image
   let sum = 0, n = 0
-  for (let y = yExtent[0] + dy; y < yExtent[1] - dy; y++) {
-    for (let x = xExtent[0] + dx; x < xExtent[1] - dx; x++) {
-      const i = (y * image.width + x) * 4
-      sum += luminosity(data[i], data[i + 1], data[i + 2])
-      n++
+
+  for (const shape of contours) {
+    // sample interior
+    const xExtent = extent(shape, p => p[0]),
+      yExtent = extent(shape, p => p[1]),
+      dx = Math.floor((xExtent[1] - xExtent[0]) / 3),
+      dy = Math.floor((yExtent[1] - yExtent[0]) / 4)
+
+    for (let y = yExtent[0] + dy; y < yExtent[1] - dy; y++) {
+      for (let x = xExtent[0] + dx; x < xExtent[1] - dx; x++) {
+        const i = (y * image.width + x) * 4
+        sum += luminosity(data[i], data[i + 1], data[i + 2])
+        n++
+      }
     }
   }
 
