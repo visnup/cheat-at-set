@@ -60,7 +60,7 @@ export default withRouter(Debug)
 const Index = ({ batches, onDelete }) => (
   <div>
     {Object.entries(batches).map(([id, samples]) => {
-      samples = sortBy(samples, s => -s.cards.length * 100 - s.sets.length)
+      samples = sortBy(samples, s => -s.cards.length)
       return (
         <div key={id}>
           <h3>
