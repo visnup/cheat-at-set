@@ -25,15 +25,18 @@ export default class Cheat extends Component {
 
   async componentDidMount() {
     const src = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' },
+      video: {
+        facingMode: 'environment',
+        height: 720,
+      },
     })
     this.video.srcObject = src
 
     this.video.addEventListener('loadeddata', ({ target }) => {
       const track = target.srcObject.getVideoTracks()[0]
       const { width, height } = track.getSettings()
-      this.canvas.width = width
-      this.canvas.height = height
+      this.canvas.width = width / 2
+      this.canvas.height = height / 2
 
       this.loop()
     })
