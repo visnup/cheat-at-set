@@ -6,7 +6,7 @@
     "micro-proxy": "1.1.0"
   },
   "devDependencies": {
-    "prettier": "1.16.1"
+    "prettier": "1.16.2"
   },
   "scripts": {
     "format": "prettier --write .babelrc *.json api/**/*.js next/**/*.js",
