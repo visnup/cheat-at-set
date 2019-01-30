@@ -1,18 +1,16 @@
 import { mean } from 'd3-array'
-import { scaleThreshold } from 'd3-scale'
 import { polygonArea, polygonHull } from 'd3-polygon'
+import { sortBy } from 'lodash'
 
-const areaScale = scaleThreshold()
-  .domain([0.1, 0.15, 0.2])
-  .range([null, 'diamond-squiggle', 'oval', null])
+const shapeCentroids = [
+  { shape: 'diamond', center: [0.109, 0.068] },
+  { shape: 'squiggle', center: [0.125, 0.158] },
+  { shape: 'oval', center: [0.162, 0.031] },
+]
 
 function shapeArea(contours, area) {
   return mean(contours.map(contour => polygonArea(contour) / area))
 }
-
-const hullScale = scaleThreshold()
-  .domain([0.1, 0.2])
-  .range(['diamond', 'squiggle', null])
 
 function hullArea(contours) {
   return mean(contours.map(contour => {
@@ -23,6 +21,9 @@ function hullArea(contours) {
 
 export default function shape(contours, width, height) {
   if (!contours.length) return null
-  const area = areaScale(shapeArea(contours, width * height))
-  return area === 'diamond-squiggle' ? hullScale(hullArea(contours)) : area
+  const point = [shapeArea(contours, width * height), hullArea(contours)]
+  return sortBy(shapeCentroids, ({ center }) => {
+    const d = [point[0] - center[0], point[1] - center[1]]
+    return d[0] * d[0] + d[1] * d[1]
+  })[0].shape
 }
