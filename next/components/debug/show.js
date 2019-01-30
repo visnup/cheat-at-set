@@ -1,6 +1,14 @@
-import { Component } from 'react'
+import { Component, Fragment } from 'react'
+import { filter } from 'lodash'
 import { Card } from '../../lib/cards'
 import { threshold } from '../../lib/luminosity'
+
+const attributes = {
+  number: [1, 2, 3],
+  color: ['red', 'green', 'purple'],
+  shade: ['solid', 'outlined', 'striped'],
+  shape: ['oval', 'diamond', 'squiggle'],
+}
 
 class Show extends Component {
   state = {
@@ -11,25 +19,56 @@ class Show extends Component {
     const { sample, onCorrect } = this.props
     if (!sample) return null
 
+    let aspectRatio = 360 / 640
+    if (this.canvas)
+      aspectRatio = this.canvas.width / this.canvas.height
+
     const { cards } = this.state
 
     return (
-      <div>
+      <div className="row">
         <canvas ref={ref => (this.canvas = ref)} />
-        <button name={sample._id} onClick={onCorrect}>✅</button>
-        {cards.map((card, i) => (
-          <div key={i}>
-            <img src={card.canvas.toDataURL()} />
-            {card.shade},
-            {card.shape},
-            {card.number},
-            {card.color}
-          </div>
-        ))}
+        <div className="cards">
+          <button name={sample._id} onClick={onCorrect}>✅</button>
+
+          {Object.entries(attributes).map(([name, values]) => (
+            <div key={name} className="row">
+              {values.map(value => (
+                <div key={value} className="column">
+                  <h5>{value}</h5>
+                  {filter(cards, { [name]: value }).map((card, i) => (
+                    <img key={i} src={card.canvas.toDataURL()} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
         <style jsx>{`
+          .row {
+            display: flex;
+            justify-content: center;
+          }
+          .column {
+            flex-basis: 33.33333%;
+            margin: 0 20px;
+          }
+
           canvas {
-            width: 100vw;
-            height: auto;
+            width: 40vw;
+            height: ${40 / aspectRatio}vw;
+          }
+
+          .cards {
+            width: 60vw;
+          }
+
+          h5 {
+            margin-bottom: .5em;
+          }
+
+          img {
+            width: 40px;
           }
         `}</style>
       </div>
@@ -60,7 +99,7 @@ class Show extends Component {
     const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
     const { sample } = this.props
-    ctx.strokeStyle = 'red'
+    ctx.strokeStyle = 'tomato'
     ctx.lineWidth = 2
     for (const card of sample.cards) {
       ctx.beginPath()
@@ -79,14 +118,13 @@ class Show extends Component {
           const ctx = runtime.canvas.getContext('2d')
           ctx.putImageData(runtime.whiteBalanced, 0, 0)
 
-          ctx.strokeStyle = 'red'
-          ctx.lineWidth = 2
-          for (const contour of runtime.contours) {
-            ctx.beginPath()
-            for (const [x, y] of contour) ctx.lineTo(x, y)
-            ctx.closePath()
-            ctx.stroke()
-          }
+          // ctx.lineWidth = 2
+          // for (const contour of runtime.contours) {
+          //   ctx.beginPath()
+          //   for (const [x, y] of contour) ctx.lineTo(x, y)
+          //   ctx.closePath()
+          //   ctx.stroke()
+          // }
           return runtime
         })
       })
