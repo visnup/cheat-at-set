@@ -37,9 +37,6 @@ class Show extends Component {
   }
 
   componentDidMount() {
-    const { canvas } = this
-    if (!canvas) return
-
     const { sample } = this.props
     threshold.value = sample.threshold
 
@@ -53,7 +50,6 @@ class Show extends Component {
       this.draw(target)
     })
   }
-  componentDidUpdate = this.componentDidMount
 
   draw(src) {
     const { canvas } = this

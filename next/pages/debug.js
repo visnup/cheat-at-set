@@ -46,7 +46,7 @@ class Debug extends Component {
     return (
       <Page {...this.props}>
         {isLoading && <p>Loading…</p>}
-        {query.id ? (
+        {query.id && byId[query.id] ? (
           <Show sample={byId[query.id]} onCorrect={this.onCorrect} />
         ) : (
           <Index batches={byBatch} onDelete={this.onDelete} />
