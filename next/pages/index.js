@@ -104,7 +104,6 @@ export default class Cheat extends Component {
         batch: this.state.debug.batch,
         threshold: threshold.value,
         cards: cards.map(card => card.toJSON()),
-        sets: sets.map(set => set.map(card => card.toJSON())),
       }),
     })
     this.setState(state => {

@@ -69,15 +69,13 @@ const Index = ({ batches, onDelete }) => (
               🗑
             </button>
           </h3>
-          <div>{new Date(+id).toString()}</div>
+          <div>{new Date(+id).toLocaleString()}</div>
           {samples.map((sample, i) => (
             <div className="image" key={i}>
               <Link href={{ query: { id: sample._id } }}>
                 <img src={sample.image} />
               </Link>
-              <div>
-                {sample.cards.length} {sample.sets.length}
-              </div>
+              <div>{sample.cards.length}</div>
             </div>
           ))}
         </div>
