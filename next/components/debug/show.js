@@ -37,7 +37,7 @@ class Show extends Component {
         <canvas ref={ref => (this.canvas = ref)} />
         <div className="cards">
           <label>
-            <input type="checkbox" checked={sample.correct} onChange={this.onCorrectChanged} />
+            <input type="checkbox" checked={!!sample.correct} onChange={this.onCorrectChanged} />
             Correct
           </label>
 
