@@ -16,8 +16,9 @@ module.exports = async function(req, res) {
     case 'GET': {
       const id = parse(req.url, true).query.id
       if (id) {
-        const sample = await samples
-          .findOne({ _id: ObjectID.createFromHexString(id) })
+        const sample = await samples.findOne({
+          _id: ObjectID.createFromHexString(id),
+        })
         if (!sample) throw createError(404)
         res.setHeader('content-type', 'image/png')
         const base64 = sample.image.replace('data:image/png;base64,', '')
@@ -26,8 +27,7 @@ module.exports = async function(req, res) {
         return (await samples
           .find({}, { projection: { image: 0 } })
           .sort({ _id: -1 })
-          .toArray())
-          .map(s => ({ ...s, image: `/api/debug?id=${s._id}` }))
+          .toArray()).map(s => ({ ...s, image: `/api/debug?id=${s._id}` }))
       }
     }
     case 'DELETE': {
