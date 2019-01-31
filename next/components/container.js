@@ -1,6 +1,6 @@
-const Container = ({ children }) => (
-  <div>
-    {children}
+const Container = props => (
+  <div {...props}>
+    {props.children}
     <style jsx>{`
       padding: 20px;
     `}</style>

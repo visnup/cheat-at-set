@@ -5,7 +5,7 @@ import fetch from 'isomorphic-unfetch'
 import { groupBy, keyBy, omit, omitBy } from 'lodash'
 
 const initialState = {
-  isFetching: false,
+  isFetching: true,
   error: null,
   byId: {},
   byBatch: {},

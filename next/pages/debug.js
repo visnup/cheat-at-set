@@ -1,11 +1,13 @@
 import { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'next/router'
+import { pick } from 'lodash'
 
 import Page from '../components/page'
 import Index from '../components/debug/index'
 import Show from '../components/debug/show'
 import { fetchSamples } from '../store'
+import Container from '../components/container'
 
 class Debug extends Component {
   componentDidMount() {
@@ -18,8 +20,9 @@ class Debug extends Component {
 
     return (
       <Page>
-        {isFetching && <p>Loading…</p>}
-        {query.id && byId[query.id] ? (
+        {isFetching ? (
+          <Container>Loading…</Container>
+        ) : query.id ? (
           <Show sample={byId[query.id]} />
         ) : (
           <Index batches={byBatch} samples={byId} />
@@ -28,4 +31,6 @@ class Debug extends Component {
     )
   }
 }
-export default withRouter(connect(state => state)(Debug))
+export default withRouter(
+  connect(state => pick(state, ['isFetching', 'byId', 'byBatch']))(Debug)
+)
