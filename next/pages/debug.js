@@ -4,8 +4,8 @@ import { withRouter } from 'next/router'
 import { pick } from 'lodash'
 
 import Page from '../components/page'
-import Index from '../components/debug/index'
-import Show from '../components/debug/show'
+import Batch from '../components/debug/batch'
+import Sample from '../components/debug/sample'
 import { fetchSamples } from '../store'
 import Container from '../components/container'
 
@@ -23,9 +23,16 @@ class Debug extends Component {
         {isFetching ? (
           <Container>Loading…</Container>
         ) : query.id ? (
-          <Show sample={byId[query.id]} />
+          <Sample sample={byId[query.id]} />
         ) : (
-          <Index batches={byBatch} samples={byId} />
+          <Container>
+            {Object.entries(byBatch).map(([id, sampleIds]) => (
+              <Batch
+                key={id}
+                batch={{ id, samples: sampleIds.map(id => byId[id]) }}
+              />
+            ))}
+          </Container>
         )}
       </Page>
     )

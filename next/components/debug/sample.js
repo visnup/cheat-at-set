@@ -13,7 +13,7 @@ const attributes = {
   shape: ['oval', 'diamond', 'squiggle'],
 }
 
-class Show extends Component {
+class Sample extends Component {
   state = {
     cards: []
   }
@@ -146,4 +146,4 @@ class Show extends Component {
   }
 }
 
-export default connect()(Show)
+export default connect()(Sample)

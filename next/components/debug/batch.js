@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import Link from 'next/link'
 import { differenceBy, flatten, sortBy, pick } from 'lodash'
 import { deleteSamples } from '../../store'
-import Container from '../container'
 
 const attributes = ['number', 'color', 'shade', 'shape']
 function cardDifference(a, b) {
@@ -12,7 +11,8 @@ function cardDifference(a, b) {
 
 class Batch extends Component {
   render() {
-    const { id, samples, dispatch } = this.props
+    const { batch, dispatch } = this.props
+    const { id, samples } = batch
     const ordered = sortBy(samples, s => -s.cards.length)
     const correct = flatten(ordered.filter(s => s.correct).map(s => s.cards))
 
@@ -53,14 +53,4 @@ class Batch extends Component {
     )
   }
 }
-Batch = connect()(Batch)
-
-const Index = ({ batches, samples }) => (
-  <Container>
-    {Object.entries(batches).map(([id, sampleIds]) => ( 
-      <Batch key={id} id={id} samples={sampleIds.map(id => samples[id])} />
-    ))}
-  </Container>
-)
-
-export default Index
+export default connect()(Batch)
