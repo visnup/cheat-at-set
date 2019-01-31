@@ -4,6 +4,7 @@ import { filter } from 'lodash'
 import { Card } from '../../lib/cards'
 import { threshold } from '../../lib/luminosity'
 import { updateSample } from '../../store'
+import Container from '../container'
 
 const attributes = {
   number: [1, 2, 3],
@@ -36,23 +37,26 @@ class Show extends Component {
       <div className="row">
         <canvas ref={ref => (this.canvas = ref)} />
         <div className="cards">
-          <label>
-            <input type="checkbox" checked={!!sample.correct} onChange={this.onCorrectChanged} />
-            Correct
-          </label>
+          <Container>
+            <label>
+              <input type="checkbox" checked={!!sample.correct} onChange={this.onCorrectChanged} />
+              {' '}
+              Correct
+            </label>
 
-          {Object.entries(attributes).map(([name, values]) => (
-            <div key={name} className="row">
-              {values.map(value => (
-                <div key={value} className="column">
-                  <h5>{value}</h5>
-                  {filter(cards, { [name]: value }).map((card, i) => (
-                    <img key={i} src={card.canvas.toDataURL()} />
-                  ))}
-                </div>
-              ))}
-            </div>
-          ))}
+            {Object.entries(attributes).map(([name, values]) => (
+              <div key={name} className="row">
+                {values.map(value => (
+                  <div key={value} className="column">
+                    <h5>{value}</h5>
+                    {filter(cards, { [name]: value }).map((card, i) => (
+                      <img key={i} src={card.canvas.toDataURL()} />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </Container>
         </div>
         <style jsx>{`
           .row {
@@ -71,6 +75,7 @@ class Show extends Component {
 
           .cards {
             width: 60vw;
+            text-align: center;
           }
 
           h5 {

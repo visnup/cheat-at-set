@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { color } from 'd3-color'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { throttle } from 'lodash'

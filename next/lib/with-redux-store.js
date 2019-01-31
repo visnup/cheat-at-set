@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { initializeStore } from '../store'
 
 const isServer = typeof window === 'undefined'

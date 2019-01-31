@@ -1,15 +1,20 @@
+import { Component } from 'react'
 import { connect } from 'react-redux'
 import Link from 'next/link'
 import { differenceBy, flatten, sortBy, pick } from 'lodash'
 import { deleteSamples } from '../../store'
+import Container from '../container'
 
 const attributes = ['number', 'color', 'shade', 'shape']
 function cardDifference(a, b) {
   return differenceBy(a, b, cards => JSON.stringify(pick(cards, attributes)))
 }
 
+class Batch extends Component {
+}
+
 const Index = ({ batches, samples, dispatch }) => (
-  <div>
+  <Container>
     {Object.entries(batches).map(([id, sampleIds]) => {
       const ordered = sortBy(
         sampleIds.map(id => samples[id]),
@@ -53,7 +58,7 @@ const Index = ({ batches, samples, dispatch }) => (
         height: 100px;
       }
     `}</style>
-  </div>
+  </Container>
 )
 
 export default connect()(Index)
