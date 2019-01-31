@@ -1,7 +1,9 @@
-import { Component, Fragment } from 'react'
+import { Component } from 'react'
+import { connect } from 'react-redux'
 import { filter } from 'lodash'
 import { Card } from '../../lib/cards'
 import { threshold } from '../../lib/luminosity'
+import { correctSample } from '../../store'
 
 const attributes = {
   number: [1, 2, 3],
@@ -15,8 +17,13 @@ class Show extends Component {
     cards: []
   }
 
+  onCorrectClick = () => {
+    const { dispatch, sample } = this.props
+    dispatch(correctSample(sample._id))
+  }
+
   render() {
-    const { sample, onCorrect } = this.props
+    const { sample } = this.props
     if (!sample) return null
 
     let aspectRatio = 360 / 640
@@ -29,7 +36,7 @@ class Show extends Component {
       <div className="row">
         <canvas ref={ref => (this.canvas = ref)} />
         <div className="cards">
-          <button name={sample._id} onClick={onCorrect}>✅</button>
+          <button onClick={this.onCorrectClick}>✅</button>
 
           {Object.entries(attributes).map(([name, values]) => (
             <div key={name} className="row">
@@ -131,4 +138,4 @@ class Show extends Component {
   }
 }
 
-export default Show
+export default connect()(Show)

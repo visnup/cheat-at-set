@@ -1,96 +1,31 @@
 import { Component } from 'react'
-import Link from 'next/link'
+import { connect } from 'react-redux'
 import { withRouter } from 'next/router'
-import fetch from 'isomorphic-unfetch'
-import { groupBy, keyBy, omit, omitBy, sortBy } from 'lodash'
 
 import Page from '../components/page'
+import Index from '../components/debug/index'
 import Show from '../components/debug/show'
+import { fetchSamples } from '../store'
 
 class Debug extends Component {
-  state = {
-    isLoading: false,
-    byBatch: [],
-    byId: {},
-  }
-
-  async componentDidMount() {
-    this.setState({ isLoading: true })
-    const res = await fetch('/api/debug')
-    const samples = await res.json()
-    this.setState({
-      isLoading: false,
-      byBatch: groupBy(samples, 'batch'),
-      byId: keyBy(samples, '_id'),
-    })
-  }
-
-  onDelete = event => {
-    const batch = +event.target.name
-    fetch(`/api/debug?batch=${batch}`, { method: 'DELETE' })
-    this.setState(state => ({
-      byBatch: omit(state.byBatch, batch),
-      byId: omitBy(state.byId, sample => sample.batch === batch),
-    }))
-  }
-
-  onCorrect = event => {
-    const id = event.target.name
-    fetch(`/api/debug?id=${id}`, { method: 'PATCH' })
+  componentDidMount() {
+    this.props.dispatch(fetchSamples())
   }
 
   render() {
     const { query } = this.props.router
-    const { isLoading, byBatch, byId } = this.state
+    const { isFetching, byBatch, byId } = this.props
 
     return (
-      <Page {...this.props}>
-        {isLoading && <p>Loading…</p>}
+      <Page>
+        {isFetching && <p>Loading…</p>}
         {query.id && byId[query.id] ? (
-          <Show sample={byId[query.id]} onCorrect={this.onCorrect} />
+          <Show sample={byId[query.id]} />
         ) : (
-          <Index batches={byBatch} onDelete={this.onDelete} />
+          <Index batches={byBatch} samples={byId} />
         )}
       </Page>
     )
   }
 }
-export default withRouter(Debug)
-
-const Index = ({ batches, onDelete }) => (
-  <div>
-    {Object.entries(batches).map(([id, samples]) => {
-      samples = sortBy(samples, s => -s.cards.length)
-      return (
-        <div key={id}>
-          <h3>
-            {id}{' '}
-            <button name={id} onClick={onDelete}>
-              🗑
-            </button>
-          </h3>
-          <div>{new Date(+id).toLocaleString()}</div>
-          {samples.map((sample, i) => (
-            <div className="image" key={i}>
-              <Link href={{ query: { id: sample._id } }}>
-                <img src={sample.image} />
-              </Link>
-              <div>{sample.cards.length}</div>
-            </div>
-          ))}
-        </div>
-      )
-    })}
-    <style jsx>{`
-      .image {
-        display: inline-block;
-        text-align: center;
-        margin: 5px 0;
-      }
-
-      .image img {
-        height: 100px;
-      }
-    `}</style>
-  </div>
-)
+export default withRouter(connect(state => state)(Debug))
