@@ -41,6 +41,16 @@ const reducer = (state = initialState, action) => {
         byBatch: omit(state.byBatch, batch),
       }
     }
+    case 'UPDATE_SAMPLE': {
+      const { id, sample } = action
+      return {
+        ...state,
+        byId: {
+          ...state.byId,
+          [id]: { ...state.byId[id], ...sample }
+        },
+      }
+    }
     default: {
       return state
     }
@@ -59,8 +69,12 @@ export const fetchSamples = () => async dispatch => {
   }
 }
 
-export const correctSample = id => async dispatch => {
-  fetch(`/api/debug?id=${id}`, { method: 'PATCH' })
+export const updateSample = (id, sample) => async dispatch => {
+  fetch(`/api/debug?id=${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(sample),
+  })
+  dispatch({ type: 'UPDATE_SAMPLE', id, sample })
 }
 
 export const deleteSamples = batch => async dispatch => {

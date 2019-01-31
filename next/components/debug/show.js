@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { filter } from 'lodash'
 import { Card } from '../../lib/cards'
 import { threshold } from '../../lib/luminosity'
-import { correctSample } from '../../store'
+import { updateSample } from '../../store'
 
 const attributes = {
   number: [1, 2, 3],
@@ -17,9 +17,9 @@ class Show extends Component {
     cards: []
   }
 
-  onCorrectClick = () => {
+  onCorrectChanged = event => {
     const { dispatch, sample } = this.props
-    dispatch(correctSample(sample._id))
+    dispatch(updateSample(sample._id, { correct: event.target.checked }))
   }
 
   render() {
@@ -36,7 +36,10 @@ class Show extends Component {
       <div className="row">
         <canvas ref={ref => (this.canvas = ref)} />
         <div className="cards">
-          <button onClick={this.onCorrectClick}>✅</button>
+          <label>
+            <input type="checkbox" checked={sample.correct} onChange={this.onCorrectChanged} />
+            Correct
+          </label>
 
           {Object.entries(attributes).map(([name, values]) => (
             <div key={name} className="row">

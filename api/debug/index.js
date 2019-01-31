@@ -35,16 +35,9 @@ module.exports = async function(req, res) {
       return await samples.deleteMany({ batch })
     }
     case 'PATCH': {
-      const id = ObjectID.createFromHexString(parse(req.url, true).query.id)
-      const sample = await samples.findOne({ _id: id })
-      await samples.updateMany(
-        { batch: sample.batch, correct: true },
-        {
-          $unset: { correct: '' },
-        }
-      )
-      await samples.updateOne({ _id: id }, { $set: { correct: true } })
-      return sample
+      const { id } = parse(req.url, true).query
+      const _id = ObjectID.createFromHexString(id)
+      return await samples.updateOne({ _id }, { $set: await json(req) })
     }
     default:
       throw createError(405)

@@ -24,7 +24,11 @@ const Index = ({ batches, samples, dispatch }) => (
               <Link href={{ query: { id: sample._id } }}>
                 <img src={sample.image} />
               </Link>
-              <div>{sample.cards.length}</div>
+              <div>
+                {sample.cards.length}
+                {' '}
+                {sample.correct ? '✅' : null}
+              </div>
             </div>
           ))}
         </div>
