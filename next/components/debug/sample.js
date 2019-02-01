@@ -2,7 +2,7 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 import { filter } from 'lodash'
 import { Card } from '../../lib/cards'
-import { threshold } from '../../lib/luminosity'
+import { getImageDataFromURL, getURLFromImageData } from '../../lib/image'
 import { updateSample } from '../../store'
 import Container from '../container'
 
@@ -52,7 +52,7 @@ class Sample extends Component {
                   <div key={value} className="column">
                     <h5>{value}</h5>
                     {filter(cards, { [name]: value }).map((card, i) => (
-                      <img key={i} src={card.canvas.toDataURL()} />
+                      <img key={i} src={card.src} />
                     ))}
                   </div>
                 ))}
@@ -92,30 +92,19 @@ class Sample extends Component {
     )
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { sample } = this.props
-    threshold.value = sample.threshold
 
-    const img = new Image()
-    img.src = sample.image
-    img.addEventListener('load', event => {
-      if (!this.canvas) return
-      const { target } = event
-      this.canvas.width = target.width
-      this.canvas.height = target.height
-      this.draw(target)
-    })
-  }
+    const image = await getImageDataFromURL(sample.image)
 
-  draw(src) {
     const { canvas } = this
+    if (!canvas) return
+    canvas.width = image.width
+    canvas.height = image.height
 
     const ctx = canvas.getContext('2d')
-    ctx.drawImage(src, 0, 0)
+    ctx.putImageData(image, 0, 0)
 
-    const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
-
-    const { sample } = this.props
     ctx.strokeStyle = 'tomato'
     ctx.lineWidth = 2
     for (const card of sample.cards) {
@@ -129,20 +118,7 @@ class Sample extends Component {
       this.setState({
         cards: sample.cards.map(card => {
           const runtime = new Card(image, card.contour, sample.threshold)
-          runtime.canvas = document.createElement('canvas')
-          runtime.canvas.width = runtime.image.width
-          runtime.canvas.height = runtime.image.height
-          const ctx = runtime.canvas.getContext('2d')
-          ctx.putImageData(runtime.whiteBalanced, 0, 0)
-
-          // ctx.lineWidth = 2
-          // for (const contour of runtime.contours) {
-          //   ctx.beginPath()
-          //   for (const [x, y] of contour) ctx.lineTo(x, y)
-          //   ctx.closePath()
-          //   ctx.stroke()
-          // }
-          return runtime
+          return { ...card, runtime, src: getURLFromImageData(runtime.whiteBalanced) }
         })
       })
   }
