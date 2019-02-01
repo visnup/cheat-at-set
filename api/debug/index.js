@@ -20,6 +20,7 @@ module.exports = async function(req, res) {
           _id: ObjectID.createFromHexString(id),
         })
         if (!sample) throw createError(404)
+        res.setHeader('cache-control', 'public, max-age=31536000')
         res.setHeader('content-type', 'image/png')
         const base64 = sample.image.replace('data:image/png;base64,', '')
         return Buffer.from(base64, 'base64')
