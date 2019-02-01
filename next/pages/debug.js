@@ -15,8 +15,7 @@ class Debug extends Component {
   }
 
   render() {
-    const { query } = this.props.router
-    const { isFetching, byBatch, byId } = this.props
+    const { isFetching, byBatch, byId, router: { query } } = this.props
 
     return (
       <Page>
