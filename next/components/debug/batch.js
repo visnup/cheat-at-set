@@ -15,7 +15,7 @@ class Batch extends Component {
   }
 
   state = {
-    diffById: null,
+    differenceById: null,
     absoluteErrors: [],
   }
 
@@ -28,8 +28,8 @@ class Batch extends Component {
     const correctCards = flatten(correctSamples.map(s => s.cards))
     const diff = difference(correctCards, cards)
     this.setState(state => ({
-      diffById: {
-        ...state.diffById,
+      differenceById: {
+        ...state.differenceById,
         [sample._id]: diff,
       },
       absoluteErrors: state.absoluteErrors.concat(diff.added.length + diff.removed.length),
@@ -38,7 +38,7 @@ class Batch extends Component {
 
   render() {
     const { batch: { id, samples }, dispatch } = this.props
-    const { diffById, absoluteErrors } = this.state
+    const { differenceById, absoluteErrors } = this.state
 
     return (
       <div>
@@ -56,7 +56,7 @@ class Batch extends Component {
           {samples.map(sample => (
             <Cards key={sample._id} image={sample.image} threshold={sample.threshold} onCards={cards => this.onCards(sample, cards)}>
               {cards => {
-                const diff = diffById && diffById[sample._id]
+                const diff = differenceById && differenceById[sample._id]
                 return (
                   <div className={`sample ${sample.correct ? 'sample--correct' : null}`}>
                     <Link href={{ query: { id: sample._id } }}>
