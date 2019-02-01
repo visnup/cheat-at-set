@@ -8,12 +8,15 @@ import number from './attributes/number'
 import shade from './attributes/shade'
 import shape from './attributes/shape'
 
-export function thresholded(image) {
+export function thresholded(image, value) {
   const result = new ImageData(image.width, image.height),
     r = result.data,
     d = image.data
   for (let i = 0; i < d.length; i += 4) {
-    r[i] = r[i + 1] = r[i + 2] = threshold(luminosity(d[i], d[i + 1], d[i + 2]))
+    r[i] = r[i + 1] = r[i + 2] = threshold(
+      luminosity(d[i], d[i + 1], d[i + 2]),
+      value
+    )
     r[i + 3] = d[i + 3]
   }
 
@@ -75,9 +78,9 @@ function transform(image, rectangle) {
   return card
 }
 
-function contours(image) {
+function contours(image, thresholdValue) {
   const area = image.width * image.height
-  return chain(contourFinder(thresholded(image)))
+  return chain(contourFinder(thresholded(image, thresholdValue)))
     .filter(c => c.length > 4) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
     .filter(contour => inRange(polygonArea(contour), area / 10, area / 5))
@@ -107,15 +110,15 @@ function whiteBalance(image) {
 }
 
 export class Card {
-  constructor(image, contour) {
+  constructor(image, contour, thresholdValue) {
     this.contour = contour
     this.area = polygonArea(contour)
     this.rectangle = rectangle(contour)
     this.image = transform(image, this.rectangle)
     this.whiteBalanced = whiteBalance(this.image)
-    this.contours = contours(this.image)
+    this.contours = contours(this.image, thresholdValue)
 
-    this.color = color(this.whiteBalanced)
+    this.color = color(this.whiteBalanced, thresholdValue)
     this.shade = shade(this.whiteBalanced, this.contours)
     this.number = number(this.contours, this.image.width)
     this.shape = shape(this.contours, this.image.width, this.image.height)
@@ -132,14 +135,14 @@ export class Card {
   }
 }
 
-export default function cards(image) {
+export default function cards(image, thresholdValue) {
   const area = image.width * image.height
-  return chain(contourFinder(thresholded(image)))
+  return chain(contourFinder(thresholded(image, thresholdValue)))
     .filter(c => c.length > 4) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
     .map(polygonHull)
     .filter(hull => inRange(polygonArea(hull), area / 100, area / 5))
-    .map(hull => new Card(image, hull))
+    .map(hull => new Card(image, hull, thresholdValue))
     .filter('valid')
     .sortBy('area')
     .take(16)

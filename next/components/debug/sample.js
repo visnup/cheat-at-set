@@ -43,6 +43,8 @@ class Sample extends Component {
               {' '}
               Correct
             </label>
+            {' '}
+            Threshold {sample.threshold}
 
             {Object.entries(attributes).map(([name, values]) => (
               <div key={name} className="row">
@@ -126,7 +128,7 @@ class Sample extends Component {
     if (!this.state.cards.length)
       this.setState({
         cards: sample.cards.map(card => {
-          const runtime = new Card(image, card.contour)
+          const runtime = new Card(image, card.contour, sample.threshold)
           runtime.canvas = document.createElement('canvas')
           runtime.canvas.width = runtime.image.width
           runtime.canvas.height = runtime.image.height

@@ -19,6 +19,7 @@ function screenY(event) {
 
 export default class Cheat extends Component {
   state = {
+    threshold: 212,
     adjustThreshold: null,
     debug: false,
   }
@@ -57,9 +58,10 @@ export default class Cheat extends Component {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
     const image = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-    if (this.state.adjustThreshold) ctx.putImageData(thresholded(image), 0, 0)
+    if (this.state.adjustThreshold)
+      ctx.putImageData(thresholded(image, this.state.threshold), 0, 0)
 
-    const cards = findCards(image)
+    const cards = findCards(image, this.state.threshold)
     ctx.strokeStyle = 'black'
     ctx.lineWidth = 2
     for (const card of cards) {
@@ -102,7 +104,7 @@ export default class Cheat extends Component {
       body: JSON.stringify({
         image: canvas.toDataURL(),
         batch: this.state.debug.batch,
-        threshold: threshold.value,
+        threshold: this.state.threshold,
         cards: cards.map(card => card.toJSON()),
       }),
     })
@@ -117,7 +119,7 @@ export default class Cheat extends Component {
     if (event.type === 'mousedown' || event.type === 'touchstart')
       this.setState({
         adjustThreshold: {
-          value: threshold.value,
+          initialValue: this.state.threshold,
           screenY: screenY(event),
         },
       })
@@ -127,8 +129,12 @@ export default class Cheat extends Component {
   moveThreshold = event => {
     const { adjustThreshold } = this.state
     if (adjustThreshold)
-      threshold.value =
-        adjustThreshold.value + screenY(event) - adjustThreshold.screenY
+      this.setState({
+        threshold:
+          adjustThreshold.initialValue +
+          screenY(event) -
+          adjustThreshold.screenY,
+      })
   }
 
   onChangeDebug = event => {

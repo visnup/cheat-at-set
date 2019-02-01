@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
 export default props => (
-  <div>
+  <div {...props}>
     <Head>
       <meta
         name="viewport"
