@@ -72,6 +72,7 @@ export const fetchSamples = () => async dispatch => {
 export const updateSample = (id, sample) => async dispatch => {
   fetch(`/api/debug?id=${id}`, {
     method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(sample),
   })
   dispatch({ type: 'UPDATE_SAMPLE', id, sample })
