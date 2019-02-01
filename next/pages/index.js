@@ -166,6 +166,11 @@ export default class Cheat extends Component {
             ? `${this.state.debug.batch} (${this.state.debug.saved})`
             : 'Debug'}
         </label>
+        <style jsx global>{`
+          body {
+            overflow: hidden;
+          }
+        `}</style>
         <style jsx>{`
           user-select: none;
 
