@@ -1,5 +1,5 @@
 import { polygonArea, polygonHull, polygonLength } from 'd3-polygon'
-import { chain, inRange, pick } from 'lodash'
+import { chain, differenceBy, inRange, pick } from 'lodash'
 import contourFinder from 'contours'
 import perspectiveTransform from 'perspective-transform'
 import { luminosity, threshold } from './luminosity'
@@ -147,4 +147,13 @@ export default function cards(image, thresholdValue) {
     .sortBy('area')
     .take(16)
     .value()
+}
+
+const attributes = ['number', 'color', 'shade', 'shape']
+const comparator = card => JSON.stringify(pick(card, attributes))
+export function difference(a, b) {
+  return {
+    removed: differenceBy(a, b, comparator),
+    added: differenceBy(b, a, comparator),
+  }
 }

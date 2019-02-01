@@ -1,83 +1,110 @@
+import { Component } from 'react'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 import Link from 'next/link'
-import { differenceBy, flatten, pick } from 'lodash'
+import { mean } from 'd3-array'
+import { flatten } from 'lodash'
+import { difference } from '../../lib/cards'
 import { deleteSamples } from '../../store'
 import Cards from '../cards'
 
-const attributes = ['number', 'color', 'shade', 'shape']
-const comparator = cards => JSON.stringify(pick(cards, attributes))
-function cardDifference(a, b) {
-  return {
-    removed: differenceBy(a, b, comparator),
-    added: differenceBy(b, a, comparator),
+class Batch extends Component {
+  static propTypes = {
+    batch: PropTypes.object,
+    dispatch: PropTypes.func,
   }
-}
 
-const Batch = ({ batch, dispatch }) => {
-  const { id, samples } = batch
-  const correctSamples = samples.filter(s => s.correct),
-    correctCards = flatten(correctSamples.map(s => s.cards))
+  state = {
+    diffById: null,
+    absoluteErrors: [],
+  }
 
-  return (
-    <div>
-      <h5>
-        {id} – {new Date(+id).toLocaleString()}
-        {' '}
-        <button onClick={() => dispatch(deleteSamples(+id))}>
-          🗑
-        </button>
-      </h5>
+  onCards = (sample, cards) => {
+    const { batch: { samples } } = this.props
+    const correctSamples = samples.filter(s => s.correct)
 
-      <div className="carousel">
-        {samples.map(sample => (
-          <Cards key={sample._id} image={sample.image} threshold={sample.threshold}>
-            {cards => {
-              const difference = correctSamples.length && cards ? cardDifference(correctCards, cards) : null
-              return (
-                <div className={`sample ${sample.correct ? 'sample--correct' : null}`}>
-                  <Link href={{ query: { id: sample._id } }}>
-                    <a><img src={sample.image} /></a>
-                  </Link>
-                  <div>
-                    {sample.cards.length} → {cards ? cards.length : '…'}
-                    {difference && (
+    if (!correctSamples.length) return
+
+    const correctCards = flatten(correctSamples.map(s => s.cards))
+    const diff = difference(correctCards, cards)
+    this.setState(state => ({
+      diffById: {
+        ...state.diffById,
+        [sample._id]: diff,
+      },
+      absoluteErrors: state.absoluteErrors.concat(diff.added.length + diff.removed.length),
+    }))
+  }
+
+  render() {
+    const { batch: { id, samples }, dispatch } = this.props
+    const { diffById, absoluteErrors } = this.state
+
+    return (
+      <div>
+        <h5>
+          {id} – {new Date(+id).toLocaleString()}
+          {' '}
+          <button onClick={() => dispatch(deleteSamples(+id))}>
+            🗑
+          </button>
+        </h5>
+
+        MAE: {mean(absoluteErrors)}
+
+        <div className="carousel">
+          {samples.map(sample => (
+            <Cards key={sample._id} image={sample.image} threshold={sample.threshold} onCards={cards => this.onCards(sample, cards)}>
+              {cards => {
+                const diff = diffById && diffById[sample._id]
+                return (
+                  <div className={`sample ${sample.correct ? 'sample--correct' : null}`}>
+                    <Link href={{ query: { id: sample._id } }}>
+                      <a><img src={sample.image} /></a>
+                    </Link>
+                    {diff && (
                       <div>
-                        +{difference.added.length}
-                        -{difference.removed.length}
+                        -{diff.removed.length}
+                        {' '}
+                        +{diff.added.length}
                       </div>
                     )}
+                    <div>
+                      {sample.cards.length}→{cards && cards.length}
+                    </div>
                   </div>
-                </div>
-              )
-            }}
-          </Cards>
-        ))}
+                )
+              }}
+            </Cards>
+          ))}
+        </div>
+
+        <style jsx>{`
+          h5 {
+            margin-bottom: .5em
+          }
+
+          .carousel {
+            white-space: nowrap;
+            overflow-x: scroll;
+            padding-bottom: 10px;
+          }
+
+          .sample {
+            display: inline-block;
+            text-align: center;
+            font-size: small;
+          }
+          .sample--correct img {
+            border: solid 2px mediumseagreen;
+          }
+
+          img {
+            height: 100px;
+          }
+        `}</style>
       </div>
-
-      <style jsx>{`
-        h5 {
-          margin-bottom: .5em
-        }
-
-        .carousel {
-          white-space: nowrap;
-          overflow-x: scroll;
-        }
-
-        .sample {
-          display: inline-block;
-          text-align: center;
-          font-size: small;
-        }
-        .sample--correct img {
-          border: solid 1px mediumseagreen;
-        }
-
-        img {
-          height: 100px;
-        }
-      `}</style>
-    </div>
-  )
+    )
+  }
 }
 export default connect()(Batch)

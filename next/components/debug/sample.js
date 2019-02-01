@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { connect } from 'react-redux'
 import { filter } from 'lodash'
-import { Card } from '../../lib/cards'
+import findCards, { Card, difference, thresholded } from '../../lib/cards'
 import { getImageDataFromURL, getURLFromImageData } from '../../lib/image'
 import { updateSample } from '../../store'
 import Container from '../container'
@@ -15,7 +15,8 @@ const attributes = {
 
 class Sample extends Component {
   state = {
-    cards: []
+    cards: [],
+    runtime: [],
   }
 
   onCorrectChanged = event => {
@@ -31,7 +32,7 @@ class Sample extends Component {
     if (this.canvas)
       aspectRatio = this.canvas.width / this.canvas.height
 
-    const { cards } = this.state
+    const { cards, runtime } = this.state
 
     return (
       <div className="row">
@@ -43,8 +44,6 @@ class Sample extends Component {
               {' '}
               Correct
             </label>
-            {' '}
-            Threshold {sample.threshold}
 
             {Object.entries(attributes).map(([name, values]) => (
               <div key={name} className="row">
@@ -56,6 +55,14 @@ class Sample extends Component {
                     ))}
                   </div>
                 ))}
+              </div>
+            ))}
+
+            <h5>runtime</h5>
+            {runtime.map(card => (
+              <div>
+                <img src={getURLFromImageData(card.whiteBalanced)} />
+                {card.contours.length}
               </div>
             ))}
           </Container>
@@ -103,6 +110,7 @@ class Sample extends Component {
     canvas.height = image.height
 
     const ctx = canvas.getContext('2d')
+    // ctx.putImageData(thresholded(image, sample.threshold), 0, 0)
     ctx.putImageData(image, 0, 0)
 
     ctx.strokeStyle = 'tomato'
@@ -114,13 +122,17 @@ class Sample extends Component {
       ctx.stroke()
     }
 
-    if (!this.state.cards.length)
+    if (!this.state.cards.length) {
+      const runtime = findCards(image, sample.threshold)
       this.setState({
         cards: sample.cards.map(card => {
           const runtime = new Card(image, card.contour, sample.threshold)
           return { ...card, runtime, src: getURLFromImageData(runtime.whiteBalanced) }
-        })
+        }),
+        runtime,
+        difference: difference(sample.cards, runtime),
       })
+    }
   }
 }
 
