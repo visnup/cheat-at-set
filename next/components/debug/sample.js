@@ -59,8 +59,8 @@ class Sample extends Component {
             ))}
 
             <h5>runtime</h5>
-            {runtime.map(card => (
-              <div>
+            {runtime.map((card, i) => (
+              <div key={i}>
                 <img src={getURLFromImageData(card.whiteBalanced)} />
                 {card.contours.length}
               </div>
