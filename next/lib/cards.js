@@ -66,13 +66,15 @@ function transform(image, rectangle) {
   const tx = perspectiveTransform(_.flatten(rectangle), target)
 
   const card = new ImageData(cw, ch)
+  const cardBuffer = new Uint32Array(card.data.buffer),
+    imageBuffer = new Uint32Array(image.data.buffer)
 
-  for (let i = 0; i < card.data.length; i += 4) {
-    const x = (i / 4) % cw,
-      y = Math.floor(i / 4 / cw),
-      [xs, ys] = tx.transformInverse(x, y).map(Math.floor),
-      j = (ys * image.width + xs) * 4
-    for (let d = 0; d < 4; d++) card.data[i + d] = image.data[j + d]
+  for (let i = 0; i < cardBuffer.length; i++) {
+    const x = i % cw,
+      y = Math.floor(i / cw),
+      [xs, ys] = tx.transformInverse(x, y),
+      j = Math.round(ys) * image.width + Math.round(xs)
+    cardBuffer[i] = imageBuffer[j]
   }
 
   return card
