@@ -75,7 +75,7 @@ class Sample extends Component {
               </thead>
               <tbody>
                 {runtime.map((card, i) => (
-                  <tr key={i}>
+                  <tr key={i} className={card.valid ? 'card--valid' : 'card--invalid'}>
                     <td><img src={getURLFromImageData(card.image)} /></td>
                     <td><img src={getURLFromImageData(thresholded(card.image, sample.threshold))} /></td>
                     <td>{card.shade}</td>
@@ -120,6 +120,11 @@ class Sample extends Component {
 
           table {
             margin: 0 auto;
+          }
+
+          .card--invalid {
+            text-decoration: line-through;
+            color: lightgray;
           }
         `}</style>
       </div>
