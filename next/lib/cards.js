@@ -1,7 +1,7 @@
 import { polygonArea, polygonHull, polygonLength } from 'd3-polygon'
 import { chain, differenceBy, inRange, pick } from 'lodash'
-import contourFinder from 'contours'
 import perspectiveTransform from 'perspective-transform'
+import contourFinder from './contours'
 import { luminosity, threshold } from './luminosity'
 import color from './attributes/color'
 import number from './attributes/number'
