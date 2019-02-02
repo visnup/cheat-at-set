@@ -7,6 +7,7 @@ export default props => (
         name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no"
       />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
       <link
         href="https://unpkg.com/normalize.css@8.0.0/normalize.css"
         rel="stylesheet"
