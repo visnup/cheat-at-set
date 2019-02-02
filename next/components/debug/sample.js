@@ -70,6 +70,7 @@ class Sample extends Component {
                   <th><h5>number</h5></th>
                   <th><h5>color</h5></th>
                   <th><h5>contours</h5></th>
+                  <th><h5>area</h5></th>
                 </tr>
               </thead>
               <tbody>
@@ -82,6 +83,7 @@ class Sample extends Component {
                     <td>{card.number}</td>
                     <td>{card.color}</td>
                     <td>{card.contours.length}</td>
+                    <td>{card.area}</td>
                   </tr>
                 ))}
               </tbody>
@@ -129,6 +131,10 @@ class Sample extends Component {
 
     const image = await getImageDataFromURL(sample.image)
 
+    console.time('runtime')
+    const runtime = findCards(image, sample.threshold, null)
+    console.timeEnd('runtime')
+
     const { canvas } = this
     if (!canvas) return
     canvas.width = image.width
@@ -139,7 +145,7 @@ class Sample extends Component {
     ctx.putImageData(image, 0, 0)
 
     ctx.strokeStyle = 'tomato'
-    ctx.lineWidth = 2
+    ctx.lineWidth = 4
     for (const card of sample.cards) {
       ctx.beginPath()
       for (const [x, y] of card.contour) ctx.lineTo(x, y)
@@ -147,10 +153,16 @@ class Sample extends Component {
       ctx.stroke()
     }
 
-    if (!this.state.cards.length) {
-      console.time('runtime')
-      const runtime = findCards(image, sample.threshold, null)
-      console.timeEnd('runtime')
+    ctx.strokeStyle = 'seagreen'
+    ctx.lineWidth = 2
+    for (const card of runtime) {
+      ctx.beginPath()
+      for (const [x, y] of card.contour) ctx.lineTo(x, y)
+      ctx.closePath()
+      ctx.stroke()
+    }
+
+    if (!this.state.cards.length)
       this.setState({
         cards: sample.cards.map(card => {
           const runtime = new Card(image, card.contour, sample.threshold)
@@ -159,7 +171,6 @@ class Sample extends Component {
         runtime,
         difference: difference(sample.cards, runtime),
       })
-    }
   }
 }
 

@@ -159,7 +159,7 @@ export default function cards(image, thresholdValue, valid='valid') {
     .filter(c => c.length > 5) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
     .map(polygonHull)
-    .filter(hull => inRange(polygonArea(hull), area / 100, area / 5))
+    .filter(hull => inRange(polygonArea(hull), area / 120, area / 10))
     .map(hull => new Card(image, hull, thresholdValue))
     .filter(valid)
     .sortBy('area')
