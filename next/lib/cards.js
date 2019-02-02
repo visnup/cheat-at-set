@@ -82,11 +82,27 @@ function transform(image, rectangle) {
 
 function contours(image, thresholdValue) {
   const area = image.width * image.height
-  return chain(contourFinder(thresholded(image, thresholdValue)))
-    .filter(c => c.length > 4) // large enough to have area
-    .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
-    .filter(contour => inRange(polygonArea(contour), area / 10, area / 5))
-    .value()
+  const thresholdLimits = [0, 255]
+
+  let attempt = null
+  for (let n = 0; n < 3; n++) { // try three times at different thresholds
+    attempt = chain(contourFinder(thresholded(image, thresholdValue)))
+      .filter(c => c.length > 5) // large enough to have area
+      .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
+      .filter(contour => inRange(Math.abs(polygonArea(contour)), area / 10, area / 4))
+      .value()
+    if (attempt.length < 1) { // higher
+      thresholdLimits[0] = thresholdValue
+      thresholdValue = Math.round((3*thresholdValue + thresholdLimits[1]) / 4)
+    // } else if (attempt.length > 3) { // lower
+    //   thresholdLimits[1] = thresholdValue
+    //   thresholdValue = Math.round((3*thresholdValue + thresholdLimits[0]) / 4)
+    } else {
+      break
+    }
+  }
+
+  return attempt
 }
 
 function whiteBalance(image) {
@@ -125,7 +141,7 @@ export class Card {
     this.number = number(this.contours, this.image.width)
     this.shape = shape(this.contours, this.image.width, this.image.height)
 
-    this.valid = this.shade && this.shape && this.number && this.color
+    this.valid = !! (this.shade && this.shape && this.number && this.color)
   }
 
   toJSON() {
@@ -137,15 +153,15 @@ export class Card {
   }
 }
 
-export default function cards(image, thresholdValue) {
+export default function cards(image, thresholdValue, valid='valid') {
   const area = image.width * image.height
   return chain(contourFinder(thresholded(image, thresholdValue)))
-    .filter(c => c.length > 4) // large enough to have area
+    .filter(c => c.length > 5) // large enough to have area
     .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
     .map(polygonHull)
     .filter(hull => inRange(polygonArea(hull), area / 100, area / 5))
     .map(hull => new Card(image, hull, thresholdValue))
-    .filter('valid')
+    .filter(valid)
     .sortBy('area')
     .take(16)
     .value()

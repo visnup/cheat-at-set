@@ -9,13 +9,13 @@ const shapeCentroids = [
 ]
 
 function shapeArea(contours, area) {
-  return mean(contours.map(contour => polygonArea(contour) / area))
+  return mean(contours.map(contour => Math.abs(polygonArea(contour)) / area))
 }
 
 function hullArea(contours) {
   return mean(contours.map(contour => {
     const hullArea = polygonArea(polygonHull(contour))
-    return (hullArea - polygonArea(contour)) / hullArea
+    return (hullArea - Math.abs(polygonArea(contour))) / hullArea
   }))
 }
 

@@ -45,6 +45,7 @@ class Sample extends Component {
               Correct
             </label>
 
+            <h4>sample {cards.length}</h4>
             {Object.entries(attributes).map(([name, values]) => (
               <div key={name} className="row">
                 {values.map(value => (
@@ -58,13 +59,33 @@ class Sample extends Component {
               </div>
             ))}
 
-            <h5>runtime</h5>
-            {runtime.map((card, i) => (
-              <div key={i}>
-                <img src={getURLFromImageData(card.whiteBalanced)} />
-                {card.contours.length}
-              </div>
-            ))}
+            <h4>runtime {runtime.length}</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th><h5>image</h5></th>
+                  <th><h5>thresholded</h5></th>
+                  <th><h5>shade</h5></th>
+                  <th><h5>shape</h5></th>
+                  <th><h5>number</h5></th>
+                  <th><h5>color</h5></th>
+                  <th><h5>contours</h5></th>
+                </tr>
+              </thead>
+              <tbody>
+                {runtime.map((card, i) => (
+                  <tr key={i}>
+                    <td><img src={getURLFromImageData(card.image)} /></td>
+                    <td><img src={getURLFromImageData(thresholded(card.image, sample.threshold))} /></td>
+                    <td>{card.shade}</td>
+                    <td>{card.shape}</td>
+                    <td>{card.number}</td>
+                    <td>{card.color}</td>
+                    <td>{card.contours.length}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </Container>
         </div>
         <style jsx>{`
@@ -87,12 +108,16 @@ class Sample extends Component {
             text-align: center;
           }
 
-          h5 {
+          h4, h5 {
             margin-bottom: .5em;
           }
 
           img {
             width: 40px;
+          }
+
+          table {
+            margin: 0 auto;
           }
         `}</style>
       </div>
@@ -123,7 +148,9 @@ class Sample extends Component {
     }
 
     if (!this.state.cards.length) {
-      const runtime = findCards(image, sample.threshold)
+      console.time('runtime')
+      const runtime = findCards(image, sample.threshold, null)
+      console.timeEnd('runtime')
       this.setState({
         cards: sample.cards.map(card => {
           const runtime = new Card(image, card.contour, sample.threshold)
