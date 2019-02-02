@@ -9,7 +9,7 @@ function percentageWidth(contours, width) {
     max = 0
 
   for (const shape of contours) {
-    for (const [x, y] of shape) {
+    for (const [x] of shape) {
       if (x < min) min = x
       if (x > max) max = x
     }

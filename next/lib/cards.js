@@ -53,7 +53,7 @@ function rectangle(points) {
 }
 
 function transform(image, rectangle) {
-  const crop = 5,
+  const crop = 2,
     cw = 150,
     ch = (cw / 3) * 2,
     target = _.flatten([
@@ -85,22 +85,24 @@ function contours(image, thresholdValue) {
   const thresholdLimits = [0, 255]
 
   let attempt = null
-  for (let n = 0; n < 3; n++) { // try three times at different thresholds
+  for (let n = 0; n < 3; n++) {
+    // try three times at different thresholds
     attempt = chain(contourFinder(thresholded(image, thresholdValue)))
       .filter(c => c.length > 5) // large enough to have area
       .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
-      .filter(contour => inRange(Math.abs(polygonArea(contour)), area / 10, area / 4))
+      .filter(contour =>
+        inRange(Math.abs(polygonArea(contour)), area / 10, area / 4)
+      )
       .value()
-    if (attempt.length < 1) { // higher
+    if (attempt.length < 1) {
+      // higher
       thresholdLimits[0] = thresholdValue
-      thresholdValue = Math.round((3*thresholdValue + thresholdLimits[1]) / 4)
-    // } else if (attempt.length > 3) { // lower
-    //   thresholdLimits[1] = thresholdValue
-    //   thresholdValue = Math.round((3*thresholdValue + thresholdLimits[0]) / 4)
+      thresholdValue += 13 //Math.round((3 * thresholdValue + thresholdLimits[1]) / 4)
     } else {
       break
     }
   }
+  attempt.threshold = thresholdValue
 
   return attempt
 }
@@ -136,12 +138,14 @@ export class Card {
     this.whiteBalanced = whiteBalance(this.image)
     this.contours = contours(this.image, thresholdValue)
 
+    if (!this.contours.length) return
+
     this.color = color(this.whiteBalanced, thresholdValue)
     this.shade = shade(this.whiteBalanced, this.contours)
     this.number = number(this.contours, this.image.width)
     this.shape = shape(this.contours, this.image.width, this.image.height)
 
-    this.valid = !! (this.shade && this.shape && this.number && this.color)
+    this.valid = !!(this.shade && this.shape && this.number && this.color)
   }
 
   toJSON() {
@@ -153,7 +157,7 @@ export class Card {
   }
 }
 
-export default function cards(image, thresholdValue, valid='valid') {
+export default function cards(image, thresholdValue, valid = 'valid') {
   const area = image.width * image.height
   return chain(contourFinder(thresholded(image, thresholdValue)))
     .filter(c => c.length > 5) // large enough to have area

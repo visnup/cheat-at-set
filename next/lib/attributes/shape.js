@@ -3,9 +3,9 @@ import { polygonArea, polygonHull } from 'd3-polygon'
 import { sortBy } from 'lodash'
 
 const shapeCentroids = [
-  { shape: 'diamond', center: [0.109, 0.068] },
-  { shape: 'squiggle', center: [0.125, 0.158] },
-  { shape: 'oval', center: [0.162, 0.031] },
+  { shape: 'diamond', center: [0.104, 0.068] },
+  { shape: 'squiggle', center: [0.124, 0.161] },
+  { shape: 'oval', center: [0.149, 0.040] },
 ]
 
 function shapeArea(contours, area) {
@@ -14,7 +14,7 @@ function shapeArea(contours, area) {
 
 function hullArea(contours) {
   return mean(contours.map(contour => {
-    const hullArea = polygonArea(polygonHull(contour))
+    const hullArea = Math.abs(polygonArea(polygonHull(contour)))
     return (hullArea - Math.abs(polygonArea(contour))) / hullArea
   }))
 }

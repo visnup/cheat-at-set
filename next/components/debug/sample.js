@@ -24,6 +24,11 @@ class Sample extends Component {
     dispatch(updateSample(sample._id, { correct: event.target.checked }))
   }
 
+  onCardClick = async card => {
+    const { image, threshold } = this.props.sample
+    return new Card(await getImageDataFromURL(image), card.contour, threshold)
+  }
+
   render() {
     const { sample } = this.props
     if (!sample) return null
@@ -75,14 +80,14 @@ class Sample extends Component {
               </thead>
               <tbody>
                 {runtime.map((card, i) => (
-                  <tr key={i} className={card.valid ? 'card--valid' : 'card--invalid'}>
-                    <td><img src={getURLFromImageData(card.image)} /></td>
-                    <td><img src={getURLFromImageData(thresholded(card.image, sample.threshold))} /></td>
+                  <tr key={i} className={`card ${card.valid ? 'card--valid' : 'card--invalid'}`} onClick={() => this.onCardClick(card)}>
+                    <td><img src={card.src} /></td>
+                    <td><img src={getURLFromImageData(thresholded(card.image, card.contours.threshold))} /></td>
                     <td>{card.shade}</td>
                     <td>{card.shape}</td>
                     <td>{card.number}</td>
                     <td>{card.color}</td>
-                    <td>{card.contours.length}</td>
+                    <td>{card.contours.threshold} / {card.contours.length}</td>
                     <td>{card.area}</td>
                   </tr>
                 ))}
@@ -122,7 +127,10 @@ class Sample extends Component {
             margin: 0 auto;
           }
 
-          .card--invalid {
+          tr.card {
+            cursor: pointer;
+          }
+          tr.card--invalid {
             text-decoration: line-through;
             color: lightgray;
           }
@@ -139,6 +147,7 @@ class Sample extends Component {
     console.time('runtime')
     const runtime = findCards(image, sample.threshold, null)
     console.timeEnd('runtime')
+    runtime.forEach(card => card.src = getURLFromImageData(card.whiteBalanced))
 
     const { canvas } = this
     if (!canvas) return
@@ -150,7 +159,7 @@ class Sample extends Component {
     ctx.putImageData(image, 0, 0)
 
     ctx.strokeStyle = 'tomato'
-    ctx.lineWidth = 4
+    ctx.lineWidth = 6
     for (const card of sample.cards) {
       ctx.beginPath()
       for (const [x, y] of card.contour) ctx.lineTo(x, y)
@@ -161,6 +170,7 @@ class Sample extends Component {
     ctx.strokeStyle = 'seagreen'
     ctx.lineWidth = 2
     for (const card of runtime) {
+      ctx.setLineDash(card.valid ? [] : [5, 5])
       ctx.beginPath()
       for (const [x, y] of card.contour) ctx.lineTo(x, y)
       ctx.closePath()
