@@ -77,13 +77,12 @@ const neighbours = (image, i, start) => {
 
 function contourFinder(imageData) {
   const contours = []
-  const seen = new ImageData(imageData.width, imageData.height),
-    seenData = seen.data
+  const seen = new Set()
   let skipping = false
 
   for (let i = 0; i < imageData.data.length / 4; i++) {
     if (imageData.data[i << 2] > 128) {
-      if (skipping || seenData[i]) {
+      if (skipping || seen.has(i)) {
         skipping = true
       } else {
         const contour = traceContour(imageData, i)
@@ -91,7 +90,7 @@ function contourFinder(imageData) {
         contours.push(contour)
 
         // this could be a _lot_ more efficient
-        for (const c of contour) seenData[c] = 1
+        for (const c of contour) seen.add(c)
       }
     } else {
       skipping = false
