@@ -3,7 +3,6 @@ import { color } from 'd3-color'
 import { schemeCategory10 } from 'd3-scale-chromatic'
 import { throttle } from 'lodash'
 import Page from '../components/page'
-import { threshold } from '../lib/luminosity'
 import findCards, { thresholded } from '../lib/cards'
 import findSets from '../lib/sets'
 

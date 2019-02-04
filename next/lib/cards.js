@@ -145,7 +145,7 @@ export class Card {
     this.color = color(this.whiteBalanced, this.contours.thresholded)
     this.shade = shade(this.whiteBalanced, this.contours)
     this.number = number(this.contours, this.image.width)
-    this.shape = shape(this.contours, this.image.width, this.image.height)
+    this.shape = shape(this.contours)
 
     this.valid = !!(this.shade && this.shape && this.number && this.color)
   }
