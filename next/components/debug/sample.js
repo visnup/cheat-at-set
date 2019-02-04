@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { connect } from 'react-redux'
 import { filter } from 'lodash'
-import findCards, { Card, difference, thresholded } from '../../lib/cards'
+import findCards, { Card, difference } from '../../lib/cards'
 import { getImageDataFromURL, getURLFromImageData } from '../../lib/image'
 import { updateSample } from '../../store'
 import Container from '../container'
@@ -37,7 +37,7 @@ class Sample extends Component {
     if (this.canvas)
       aspectRatio = this.canvas.width / this.canvas.height
 
-    const { cards, runtime } = this.state
+    const { cards, runtime, difference } = this.state
 
     return (
       <div className="row">
@@ -74,7 +74,6 @@ class Sample extends Component {
                   <th><h5>shape</h5></th>
                   <th><h5>number</h5></th>
                   <th><h5>color</h5></th>
-                  <th><h5>contours</h5></th>
                   <th><h5>area</h5></th>
                 </tr>
               </thead>
@@ -82,17 +81,39 @@ class Sample extends Component {
                 {runtime.map((card, i) => (
                   <tr key={i} className={`card ${card.valid ? 'card--valid' : 'card--invalid'}`} onClick={() => this.onCardClick(card)}>
                     <td><img src={card.src} /></td>
-                    <td><img src={getURLFromImageData(thresholded(card.image, card.contours.threshold))} /></td>
+                    <td>
+                      <img src={getURLFromImageData(card.contours.thresholded)} />
+                      {' '}
+                      {card.contours.threshold} / {card.contours.length}
+                    </td>
                     <td>{card.shade}</td>
                     <td>{card.shape}</td>
                     <td>{card.number}</td>
                     <td>{card.color}</td>
-                    <td>{card.contours.threshold} / {card.contours.length}</td>
                     <td>{card.area}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {Object.entries(attributes).map(([name, values]) => (
+              <div key={name} className="row">
+                {values.map(value => (
+                  <div key={value} className="column">
+                    <h5>{value}</h5>
+                    {filter(runtime, { [name]: value }).map((card, i) => (
+                      <img key={i} src={card.src} />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ))}
+
+            {difference && (
+              <div>
+                <h4>difference</h4>
+                {JSON.stringify(difference)}
+              </div>
+            )}
           </Container>
         </div>
         <style jsx>{`
@@ -121,6 +142,7 @@ class Sample extends Component {
 
           img {
             width: 40px;
+            vertical-align: middle;
           }
 
           table {
@@ -134,6 +156,10 @@ class Sample extends Component {
             text-decoration: line-through;
             color: lightgray;
           }
+
+          td {
+            vertical-align: baseline;
+          }
         `}</style>
       </div>
     )
@@ -143,6 +169,10 @@ class Sample extends Component {
     const { sample } = this.props
 
     const image = await getImageDataFromURL(sample.image)
+
+    // testing performance
+    // for (let n = 0; n < 60; n++)
+    //   findCards(image, sample.threshold)
 
     console.time('runtime')
     const runtime = findCards(image, sample.threshold, null)

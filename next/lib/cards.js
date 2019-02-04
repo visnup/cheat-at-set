@@ -87,13 +87,16 @@ function contours(image, thresholdValue) {
   let attempt = null
   for (let n = 0; n < 3; n++) {
     // try three times at different thresholds
-    attempt = chain(contourFinder(thresholded(image, thresholdValue)))
+    const thresholdedImage = thresholded(image, thresholdValue)
+    attempt = chain(contourFinder(thresholdedImage))
       .filter(c => c.length > 5) // large enough to have area
       .map(c => c.map(p => [p % image.width, Math.floor(p / image.width)])) // switch to x,y
       .filter(contour =>
         inRange(Math.abs(polygonArea(contour)), area / 10, area / 4)
       )
       .value()
+    attempt.thresholded = thresholdedImage
+    attempt.threshold = thresholdValue
     if (attempt.length < 1) {
       // higher
       thresholdLimits[0] = thresholdValue
@@ -102,7 +105,6 @@ function contours(image, thresholdValue) {
       break
     }
   }
-  attempt.threshold = thresholdValue
 
   return attempt
 }
@@ -140,7 +142,7 @@ export class Card {
 
     if (!this.contours.length) return
 
-    this.color = color(this.whiteBalanced, thresholdValue)
+    this.color = color(this.whiteBalanced, this.contours.thresholded)
     this.shade = shade(this.whiteBalanced, this.contours)
     this.number = number(this.contours, this.image.width)
     this.shape = shape(this.contours, this.image.width, this.image.height)
