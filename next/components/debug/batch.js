@@ -63,7 +63,7 @@ class Batch extends Component {
                       <a><img src={sample.image} /></a>
                     </Link>
                     {diff && (
-                      <div>
+                      <div diff={diff}>
                         -{diff.removed.length}
                         {' '}
                         +{diff.added.length}

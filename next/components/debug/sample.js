@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import { connect } from 'react-redux'
 import { filter } from 'lodash'
+import { polygonHull } from 'd3-polygon'
 import findCards, { Card, difference } from '../../lib/cards'
 import { getImageDataFromURL, getURLFromImageData } from '../../lib/image'
 import { updateSample } from '../../store'
@@ -82,7 +83,7 @@ class Sample extends Component {
                   <tr key={i} className={`card ${card.valid ? 'card--valid' : 'card--invalid'}`} onClick={() => this.onCardClick(card)}>
                     <td><img src={card.src} /></td>
                     <td>
-                      <img src={getURLFromImageData(card.contours.thresholded)} />
+                      <img src={card.contoured} />
                       {' '}
                       {card.contours.threshold} / {card.contours.length}
                     </td>
@@ -177,7 +178,30 @@ class Sample extends Component {
     console.time('runtime')
     const runtime = findCards(image, sample.threshold, null)
     console.timeEnd('runtime')
-    runtime.forEach(card => card.src = getURLFromImageData(card.whiteBalanced))
+    runtime.forEach(card => {
+      card.src = getURLFromImageData(card.whiteBalanced)
+      card.thresholded = getURLFromImageData(card.contours.thresholded)
+      const canvas = document.createElement('canvas')
+      canvas.width = card.contours.thresholded.width
+      canvas.height = card.contours.thresholded.height
+      const ctx = canvas.getContext('2d')
+      ctx.putImageData(card.contours.thresholded, 0, 0)
+      ctx.strokeStyle = 'tomato'
+      ctx.lineWidth = 2
+      for (const contour of card.contours) {
+        ctx.beginPath()
+        for (const [x, y] of polygonHull(contour)) ctx.lineTo(x, y)
+        ctx.closePath()
+        ctx.stroke()
+      }
+      for (const contour of card.contours) {
+        ctx.beginPath()
+        for (const [x, y] of contour) ctx.lineTo(x, y)
+        ctx.closePath()
+        ctx.stroke()
+      }
+      card.contoured = canvas.toDataURL()
+    })
 
     const { canvas } = this
     if (!canvas) return
@@ -185,7 +209,6 @@ class Sample extends Component {
     canvas.height = image.height
 
     const ctx = canvas.getContext('2d')
-    // ctx.putImageData(thresholded(image, sample.threshold), 0, 0)
     ctx.putImageData(image, 0, 0)
 
     ctx.strokeStyle = 'tomato'
@@ -211,7 +234,11 @@ class Sample extends Component {
       this.setState({
         cards: sample.cards.map(card => {
           const runtime = new Card(image, card.contour, sample.threshold)
-          return { ...card, runtime, src: getURLFromImageData(runtime.whiteBalanced) }
+          return {
+            ...card,
+            runtime,
+            src: getURLFromImageData(runtime.whiteBalanced)
+          }
         }),
         runtime,
         difference: difference(sample.cards, runtime),
