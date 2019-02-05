@@ -1,7 +1,7 @@
 import { scaleThreshold } from 'd3-scale'
 
 const scale = scaleThreshold()
-  .domain([0.1, 0.45, 0.75, 0.98])
+  .domain([0.1, 0.44, 0.75, 0.98])
   .range([null, 1, 2, 3, null])
 
 function percentageWidth(contours, width) {
