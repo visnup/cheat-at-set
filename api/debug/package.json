@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "micro": "^9.3.3",
-    "mongodb": "3.1.13",
+    "mongodb": "3.5.9",
     "now-micro": "^0.3.0"
   },
   "devDependencies": {
