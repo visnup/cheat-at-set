@@ -32,7 +32,7 @@ services:
     command: npm run dev
 
   db:
-    image: mongo:4.1.7-xenial
+    image: mongo:4.1.9-xenial
     environment:
       - DB_URL
     volumes:
